@@ -78,6 +78,8 @@ bool Task::fill_input_packet(int stream_id, Packet packet) {
         return false;
     }
     it->second->push(packet);
+    static int count = 0;
+    if(stream_id == 1) std::cout<<"stream: "<< stream_id <<"fill input packet success!"<< count++ <<"\n";
     return true;
 }
 

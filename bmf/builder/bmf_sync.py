@@ -120,6 +120,8 @@ def process(module, pkts_dict):
             if key not in module.get_input_streams():
                 raise Exception("pkt key not exists")
             for packet in pkts:
+                print("get inputs success!")
+                file = open("example.txt", "w")
                 task.get_inputs()[key].put(packet)
 
     # process task

@@ -80,14 +80,22 @@ class EnhanceModule(Module):
             half=not fp32,
             gpu_id=gpu_id,
         )
+        self.count = 0
+
+
 
     def process(self, task):
         output_queue = task.get_outputs().get(0, None)
         input_queue = task.get_inputs().get(0, None)
+        # print(task)
+        # print(input_queue)
+        
 
         while not input_queue.empty():
             pkt = input_queue.get()
+            print(pkt) # print pkt info
             # process EOS
+
             if pkt.timestamp == Timestamp.EOF:
                 Log.log_node(LogLevel.INFO, task.get_node(), "Receive EOF")
                 if output_queue is not None:
@@ -96,19 +104,23 @@ class EnhanceModule(Module):
                 return ProcessResult.OK
 
             video_frame = pkt.get(VideoFrame)
+            # print(video_frame)
             # use ffmpeg
             frame = ffmpeg.reformat(video_frame,
                                     "rgb24").frame().plane(0).numpy()
+            print("yuv420p convert into rgb24 done!", self._node)
 
             output, _ = self.upsampler.enhance(frame, self.output_scale)
             Log.log_node(
-                LogLevel.INFO,
+                LogLevel.ERROR,
                 self._node,
                 "enhance output shape: ",
                 output.shape,
                 " flags: ",
                 output.flags,
             )
+            self.count += 1
+            print("enhance frame count:",self.count)
             output = np.ascontiguousarray(output)
             rgbformat = mp.PixelInfo(mp.kPF_RGB24)
             image = mp.Frame(mp.from_numpy(output), rgbformat)
@@ -122,5 +134,6 @@ class EnhanceModule(Module):
             output_pkt.timestamp = pkt.timestamp
             if output_queue is not None:
                 output_queue.put(output_pkt)
+            print("enhance module process done!")
 
         return ProcessResult.OK

@@ -1,0 +1,1811 @@
+[2024-06-02 08:49:58.631] [info] c_ffmpeg_decoder c++ /root/workspace/bmf/output/bmf/lib/libbuiltin_modules.so libbuiltin_modules.CFFDecoder
+[2024-06-02 08:49:58.631] [info] Module info c_ffmpeg_decoder c++ libbuiltin_modules.CFFDecoder /root/workspace/bmf/output/bmf/lib/libbuiltin_modules.so
+[2024-06-02 08:49:58.632] [info] Constructing c++ module
+[2024-06-02 08:49:58.632] [info] node id:0 decode setting log level to: debug
+[2024-06-02 08:49:58.638] [info] c++ module constructed
+[2024-06-02 08:49:58.638] [info] Module info EnhanceModule python enhance_module.EnhanceModule /root/bmf/bmf/demo/video_enhance
+[2024-06-02 08:50:00.556] [info] c_ffmpeg_encoder c++ /root/workspace/bmf/output/bmf/lib/libbuiltin_modules.so libbuiltin_modules.CFFEncoder
+[2024-06-02 08:50:00.556] [info] Module info c_ffmpeg_encoder c++ libbuiltin_modules.CFFEncoder /root/workspace/bmf/output/bmf/lib/libbuiltin_modules.so
+[2024-06-02 08:50:00.556] [info] Constructing c++ module
+[2024-06-02 08:50:00.556] [info] node id:2 encode setting log level to: debug
+[2024-06-02 08:50:00.556] [info] c++ module constructed
+[2024-06-02 08:50:00.557] [info] BMF Version: 0.0.9
+[2024-06-02 08:50:00.557] [info] BMF Commit: 1e1e60a
+[2024-06-02 08:50:00.557] [info] start init graph
+[2024-06-02 08:50:00.557] [info] scheduler count2
+debug queue size, node 0, queue size: 5
+[2024-06-02 08:50:00.557] [info] node:c_ffmpeg_decoder 0 scheduler 0
+debug queue size, node 1, queue size: 5
+[2024-06-02 08:50:00.557] [info] node:EnhanceModule 1 scheduler 0
+debug queue size, node 2, queue size: 5
+[2024-06-02 08:50:00.557] [info] node:c_ffmpeg_encoder 2 scheduler 1
+{
+    "input_streams": [],
+    "output_streams": [],
+    "nodes": [
+        {
+            "module_info": {
+                "name": "c_ffmpeg_decoder",
+                "type": "",
+                "path": "",
+                "entry": ""
+            },
+            "meta_info": {
+                "premodule_id": -1,
+                "callback_binding": []
+            },
+            "option": {
+                "input_path": "inputs/example_320_180.mp4",
+                "loglevel": "debug"
+            },
+            "input_streams": [],
+            "output_streams": [
+                {
+                    "identifier": "video:c_ffmpeg_decoder_0_1",
+                    "stream_alias": ""
+                },
+                {
+                    "identifier": "audio:c_ffmpeg_decoder_0_2",
+                    "stream_alias": ""
+                }
+            ],
+            "input_manager": "immediate",
+            "scheduler": 0,
+            "alias": "",
+            "id": 0
+        },
+        {
+            "module_info": {
+                "name": "EnhanceModule",
+                "type": "",
+                "path": "",
+                "entry": "enhance_module.EnhanceModule"
+            },
+            "meta_info": {
+                "premodule_id": -1,
+                "callback_binding": []
+            },
+            "option": {
+                "fp32": true,
+                "output_scale": 2
+            },
+            "input_streams": [
+                {
+                    "identifier": "c_ffmpeg_decoder_0_1",
+                    "stream_alias": ""
+                }
+            ],
+            "output_streams": [
+                {
+                    "identifier": "EnhanceModule_1_0",
+                    "stream_alias": ""
+                }
+            ],
+            "input_manager": "immediate",
+            "scheduler": 0,
+            "alias": "",
+            "id": 1
+        },
+        {
+            "module_info": {
+                "name": "c_ffmpeg_encoder",
+                "type": "",
+                "path": "",
+                "entry": ""
+            },
+            "meta_info": {
+                "premodule_id": -1,
+                "callback_binding": []
+            },
+            "option": {
+                "video_params": {
+                    "g": "50",
+                    "preset": "veryfast",
+                    "bf": 0,
+                    "vsync": "vfr",
+                    "max_fr": 30
+                },
+                "audio_params": {
+                    "sample_rate": 44100,
+                    "codec": "aac"
+                },
+                "loglevel": "debug",
+                "output_path": "output.mp4"
+            },
+            "input_streams": [
+                {
+                    "identifier": "EnhanceModule_1_0",
+                    "stream_alias": ""
+                },
+                {
+                    "identifier": "c_ffmpeg_decoder_0_2",
+                    "stream_alias": ""
+                }
+            ],
+            "output_streams": [],
+            "input_manager": "immediate",
+            "scheduler": 1,
+            "alias": "",
+            "id": 2
+        }
+    ],
+    "option": {},
+    "mode": "Normal"
+}
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab9b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 1
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab370>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 2
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab9b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 3
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 4
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 5
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab730>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 6
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabeb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 7
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 8
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 9
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 10
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 11
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab070>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 12
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab270>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 13
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab670>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 14
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabb70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 15
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 16
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab270>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 17
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 18
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 19
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab270>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 20
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 21
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 22
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab270>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 23
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 24
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 25
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab270>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 26
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 27
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 28
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab270>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 29
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 30
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 31
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab270>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 32
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 33
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 34
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab270>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 35
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 36
+enhance module process done!
+stream: 1fill input packet success!0
+stream: 1fill input packet success!1
+stream: 1fill input packet success!2
+stream: 1fill input packet success!3
+stream: 1fill input packet success!4
+stream: 1fill input packet success!5
+stream: 1fill input packet success!6
+stream: 1fill input packet success!7
+stream: 1fill input packet success!8
+stream: 1fill input packet success!9
+stream: 1fill input packet success!10
+stream: 1fill input packet success!11
+stream: 1fill input packet success!12
+stream: 1fill input packet success!13
+stream: 1fill input packet success!14
+stream: 1fill input packet success!15
+stream: 1fill input packet success!16
+stream: 1fill input packet success!17
+stream: 1fill input packet success!18
+stream: 1fill input packet success!19
+stream: 1fill input packet success!20
+stream: 1fill input packet success!21
+stream: 1fill input packet success!22
+stream: 1fill input packet success!23
+stream: 1fill input packet success!24
+stream: 1fill input packet success!25
+stream: 1fill input packet success!26
+stream: 1fill input packet success!27
+stream: 1fill input packet success!28
+stream: 1fill input packet success!29
+stream: 1fill input packet success!30
+stream: 1fill input packet success!31
+stream: 1fill input packet success!32
+stream: 1fill input packet success!33
+stream: 1fill input packet success!34
+stream: 1fill input packet success!35
+stream: 1fill input packet success!36
+stream: 1fill input packet success!37
+stream: 1fill input packet success!38
+stream: 1fill input packet success!39
+stream: 1fill input packet success!40
+stream: 1fill input packet success!41
+stream: 1fill input packet success!42
+stream: 1fill input packet success!43
+stream: 1fill input packet success!44
+stream: 1fill input packet success!45
+stream: 1fill input packet success!46
+stream: 1fill input packet success!47
+stream: 1fill input packet success!48
+stream: 1fill input packet success!49
+stream: 1fill input packet success!50
+stream: 1fill input packet success!51
+stream: 1fill input packet success!52
+stream: 1fill input packet success!53
+stream: 1fill input packet success!54
+stream: 1fill input packet success!55
+stream: 1fill input packet success!56
+stream: 1fill input packet success!57
+stream: 1fill input packet success!58
+stream: 1fill input packet success!59
+stream: 1fill input packet success!60
+stream: 1fill input packet success!61
+stream: 1fill input packet success!62
+stream: 1fill input packet success!63
+stream: 1fill input packet success!64
+stream: 1fill input packet success!65
+stream: 1fill input packet success!66
+stream: 1fill input packet success!67
+stream: 1fill input packet success!68
+stream: 1fill input packet success!69
+stream: 1fill input packet success!70
+stream: 1fill input packet success!71
+stream: 1fill input packet success!72
+stream: 1fill input packet success!73
+stream: 1fill input packet success!74
+stream: 1fill input packet success!75
+stream: 1fill input packet success!76
+stream: 1fill input packet success!77
+stream: 1fill input packet success!78
+stream: 1fill input packet success!79
+stream: 1fill input packet success!80
+stream: 1fill input packet success!81
+stream: 1fill input packet success!82
+stream: 1fill input packet success!83
+stream: 1fill input packet success!84
+stream: 1fill input packet success!85
+stream: 1fill input packet success!86
+stream: 1fill input packet success!87
+stream: 1fill input packet success!88
+stream: 1fill input packet success!89
+stream: 1fill input packet success!90
+stream: 1fill input packet success!91
+stream: 1fill input packet success!92
+stream: 1fill input packet success!93
+stream: 1fill input packet success!94
+stream: 1fill input packet success!95
+stream: 1fill input packet success!96
+stream: 1fill input packet success!97
+stream: 1fill input packet success!98
+stream: 1fill input packet success!99
+stream: 1fill input packet success!100
+stream: 1fill input packet success!101
+stream: 1fill input packet success!102
+stream: 1fill input packet success!103
+stream: 1fill input packet success!104
+stream: 1fill input packet success!105
+stream: 1fill input packet success!106
+stream: 1fill input packet succes<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 37
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab4b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 38
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab430>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 39
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 40
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab1b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 41
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab130>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 42
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 43
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 44
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab7b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 45
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aaba30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 46
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 47
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 48
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 49
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 50
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 51
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabb70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 52
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 53
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 54
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabb70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 55
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 56
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 57
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabb70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 58
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 59
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 60
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabb70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 61
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 62
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 63
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabb70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 64
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 65
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 66
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabb70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 67
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 68
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 69
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabb70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 70
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 71
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 72
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabb70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 73
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 74
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab01f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 75
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 76
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab070>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 77
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 78
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 79
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 80
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab070>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 81
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 82
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 83
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 84
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab070>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 85
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 86
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 87
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 88
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab070>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 89
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 90
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 91
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 92
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab070>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 93
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 94
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 95
+s!107
+stream: 1fill input packet success!108
+stream: 1fill input packet success!109
+stream: 1fill input packet success!110
+stream: 1fill input packet success!111
+stream: 1fill input packet success!112
+stream: 1fill input packet success!113
+stream: 1fill input packet success!114
+stream: 1fill input packet success!115
+stream: 1fill input packet success!116
+stream: 1fill input packet success!117
+stream: 1fill input packet success!118
+stream: 1fill input packet success!119
+stream: 1fill input packet success!120
+stream: 1fill input packet success!121
+stream: 1fill input packet success!122
+stream: 1fill input packet success!123
+stream: 1fill input packet success!124
+stream: 1fill input packet success!125
+stream: 1fill input packet success!126
+stream: 1fill input packet success!127
+stream: 1fill input packet success!128
+stream: 1fill input packet success!129
+stream: 1fill input packet success!130
+stream: 1fill input packet success!131
+stream: 1fill input packet success!132
+stream: 1fill input packet success!133
+stream: 1fill input packet success!134
+stream: 1fill input packet success!135
+stream: 1fill input packet success!136
+stream: 1fill input packet success!137
+stream: 1fill input packet success!138
+stream: 1fill input packet success!139
+stream: 1fill input packet success!140
+stream: 1fill input packet success!141
+stream: 1fill input packet success!142
+stream: 1fill input packet success!143
+stream: 1fill input packet success!144
+stream: 1fill input packet success!145
+stream: 1fill input packet success!146
+stream: 1fill input packet success!147
+stream: 1fill input packet success!148
+stream: 1fill input packet success!149
+stream: 1fill input packet success!150
+stream: 1fill input packet success!151
+stream: 1fill input packet success!152
+stream: 1fill input packet success!153
+stream: 1fill input packet success!154
+stream: 1fill input packet success!155
+stream: 1fill input packet success!156
+stream: 1fill input packet success!157
+stream: 1fill input packet success!158
+stream: 1fill input packet success!159
+stream: 1fill input packet success!160
+stream: 1fill input packet success!161
+stream: 1fill input packet success!162
+stream: 1fill input packet success!163
+stream: 1fill input packet success!164
+stream: 1fill input packet success!165
+stream: 1fill input packet success!166
+stream: 1fill input packet success!167
+stream: 1fill input packet success!168
+stream: 1fill input packet success!169
+stream: 1fill input packet success!170
+stream: 1fill input packet success!171
+stream: 1fill input packet success!172
+stream: 1fill input packet success!173
+stream: 1fill input packet success!174
+stream: 1fill input packet success!175
+stream: 1fill input packet success!176
+stream: 1fill input packet success!177
+stream: 1fill input packet success!178
+stream: 1fill input packet success!179
+stream: 1fill input packet success!180
+stream: 1fill input packet success!181
+stream: 1fill input packet success!182
+stream: 1fill input packet success!183
+stream: 1fill input packet success!184
+stream: 1fill input packet success!185
+stream: 1fill input packet success!186
+stream: 1fill input packet success!187
+stream: 1fill input packet success!188
+stream: 1fill input packet success!189
+stream: 1fill input packet success!190
+stream: 1fill input packet success!191
+stream: 1fill input packet success!192
+stream: 1fill input packet success!193
+stream: 1fill input packet success!194
+stream: 1fill input packet success!195
+stream: 1fill input packet success!196
+stream: 1fill input packet success!197
+stream: 1fill input packet success!198
+stream: 1fill input packet success!199
+stream: 1fill input packet success!200
+stream: 1fill input packet success!201
+stream: 1fill input packet success!202
+stream: 1fill input packet success!203
+stream: 1fill input packet success!204
+stream: 1fill input packet success!205
+stream: 1fill input packet success!206
+stream: 1fill input packet success!207
+stream: 1fill input packet success!208
+stream: 1fill input packet success!209
+stream: 1fill input packet success!210
+stream: 1fill input packet success!211
+stream: 1fill input packet successenhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab6b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 96
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab430>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 97
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab270>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 98
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabc30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 99
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab230>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 100
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab9b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 101
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab4f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 102
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 103
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 104
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab730>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 105
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabeb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 106
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab170>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 107
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 108
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 109
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 110
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab670>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 111
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 112
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 113
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab670>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 114
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 115
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 116
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab670>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 117
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 118
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 119
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab670>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 120
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 121
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 122
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab670>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 123
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 124
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 125
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab670>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 126
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 127
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 128
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab670>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 129
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 130
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 131
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab670>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 132
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 133
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab05b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 134
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 135
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 136
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 137
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 138
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 139
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 140
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 141
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 142
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 143
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 144
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 145
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 146
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 147
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 148
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 149
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 150
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 151
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 152
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 153
+enhance module process done!
+!212
+stream: 1fill input packet success!213
+stream: 1fill input packet success!214
+stream: 1fill input packet success!215
+stream: 1fill input packet success!216
+stream: 1fill input packet success!217
+stream: 1fill input packet success!218
+stream: 1fill input packet success!219
+stream: 1fill input packet success!220
+stream: 1fill input packet success!221
+stream: 1fill input packet success!222
+stream: 1fill input packet success!223
+stream: 1fill input packet success!224
+stream: 1fill input packet success!225
+stream: 1fill input packet success!226
+stream: 1fill input packet success!227
+stream: 1fill input packet success!228
+stream: 1fill input packet success!229
+stream: 1fill input packet success!230
+stream: 1fill input packet success!231
+stream: 1fill input packet success!232
+stream: 1fill input packet success!233
+stream: 1fill input packet success!234
+stream: 1fill input packet success!235
+stream: 1fill input packet success!236
+stream: 1fill input packet success!237
+stream: 1fill input packet success!238
+stream: 1fill input packet success!239
+stream: 1fill input packet success!240
+stream: 1fill input packet success!241
+stream: 1fill input packet success!242
+stream: 1fill input packet success!243
+stream: 1fill input packet success!244
+stream: 1fill input packet success!245
+stream: 1fill input packet success!246
+stream: 1fill input packet success!247
+stream: 1fill input packet success!248
+stream: 1fill input packet success!249
+stream: 1fill input packet success!250
+stream: 1fill input packet success!251
+stream: 1fill input packet success!252
+stream: 1fill input packet success!253
+stream: 1fill input packet success!254
+stream: 1fill input packet success!255
+stream: 1fill input packet success!256
+stream: 1fill input packet success!257
+stream: 1fill input packet success!258
+stream: 1fill input packet success!259
+stream: 1fill input packet success!260
+stream: 1fill input packet success!261
+stream: 1fill input packet success!262
+stream: 1fill input packet success!263
+stream: 1fill input packet success!264
+stream: 1fill input packet success!265
+stream: 1fill input packet success!266
+stream: 1fill input packet success!267
+stream: 1fill input packet success!268
+stream: 1fill input packet success!269
+stream: 1fill input packet success!270
+stream: 1fill input packet success!271
+stream: 1fill input packet success!272
+stream: 1fill input packet success!273
+stream: 1fill input packet success!274
+stream: 1fill input packet success!275
+stream: 1fill input packet success!276
+stream: 1fill input packet success!277
+stream: 1fill input packet success!278
+stream: 1fill input packet success!279
+stream: 1fill input packet success!280
+stream: 1fill input packet success!281
+stream: 1fill input packet success!282
+stream: 1fill input packet success!283
+stream: 1fill input packet success!284
+stream: 1fill input packet success!285
+stream: 1fill input packet success!286
+stream: 1fill input packet success!287
+stream: 1fill input packet success!288
+stream: 1fill input packet success!289
+stream: 1fill input packet success!290
+stream: 1fill input packet success!291
+stream: 1fill input packet success!292
+stream: 1fill input packet success!293
+stream: 1fill input packet success!294
+stream: 1fill input packet success!295
+stream: 1fill input packet success!296
+stream: 1fill input packet success!297
+stream: 1fill input packet success!298
+stream: 1fill input packet success!299
+stream: 1fill input packet success!300
+stream: 1fill input packet success!301
+stream: 1fill input packet success!302
+stream: 1fill input packet success!303
+stream: 1fill input packet success!304
+stream: 1fill input packet success!305
+stream: 1fill input packet success!306
+stream: 1fill input packet success!307
+stream: 1fill input packet success!308
+stream: 1fill input packet success!309
+stream: 1fill input packet success!310
+stream: 1fill input packet success!311
+stream: 1fill input packet success!312
+stream: 1fill input packet success!313
+stream: 1fill input packet success!314
+stream: 1fill input packet success!315
+stream: 1fill input packet success!316
+stream: 1fill input packet success!<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 154
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabdf0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 155
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab230>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 156
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab9b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 157
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab4f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 158
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 159
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 160
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab730>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 161
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabeb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 162
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab170>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 163
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 164
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 165
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 166
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 167
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 168
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 169
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 170
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 171
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 172
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 173
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 174
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 175
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 176
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 177
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 178
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 179
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 180
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 181
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 182
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 183
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 184
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 185
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 186
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 187
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 188
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 189
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabf30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 190
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 191
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab05b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 192
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 193
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab7b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 194
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 195
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 196
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 197
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab7b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 198
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 199
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 200
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 201
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab7b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 202
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 203
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 204
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 205
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab7b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 206
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 207
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 208
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 209
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab7b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 210
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 211
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 212
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabdf0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 213
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 214
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab270>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 215
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab370>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 216
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabaf0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 217
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabc30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 218
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab4b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 219
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabd70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 220
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 221
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 222
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab130>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 223
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab1b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 224
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 225
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 226
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aaba30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 227
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 228
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 229
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aaba30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 230
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 231
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 232
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aaba30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 233
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 234
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 235
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aaba30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 236
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 237
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 238
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aaba30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 239
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 240
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 241
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aaba30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 242
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 243
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 244
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aaba30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 245
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 246
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 247
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aaba30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 248
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 249
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0bf0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 250
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 251
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 252
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 253
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 254
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 255
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 256
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 257
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 258
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 259
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 260
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 261
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 262
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 263
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 264
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 265
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 266
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 267
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab2b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 268
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91b4f8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 269
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 270
+317
+stream: 1fill input packet success!318
+stream: 1fill input packet success!319
+stream: 1fill input packet success!320
+stream: 1fill input packet success!321
+stream: 1fill input packet success!322
+stream: 1fill input packet success!323
+stream: 1fill input packet success!324
+stream: 1fill input packet success!325
+stream: 1fill input packet success!326
+stream: 1fill input packet success!327
+stream: 1fill input packet success!328
+stream: 1fill input packet success!329
+stream: 1fill input packet success!330
+stream: 1fill input packet success!331
+stream: 1fill input packet success!332
+stream: 1fill input packet success!333
+stream: 1fill input packet success!334
+stream: 1fill input packet success!335
+stream: 1fill input packet success!336
+stream: 1fill input packet success!337
+stream: 1fill input packet success!338
+stream: 1fill input packet success!339
+stream: 1fill input packet success!340
+stream: 1fill input packet success!341
+stream: 1fill input packet success!342
+stream: 1fill input packet success!343
+stream: 1fill input packet success!344
+stream: 1fill input packet success!345
+stream: 1fill input packet success!346
+stream: 1fill input packet success!347
+stream: 1fill input packet success!348
+stream: 1fill input packet success!349
+stream: 1fill input packet success!350
+stream: 1fill input packet success!351
+stream: 1fill input packet success!352
+stream: 1fill input packet success!353
+stream: 1fill input packet success!354
+stream: 1fill input packet success!355
+stream: 1fill input packet success!356
+stream: 1fill input packet success!357
+stream: 1fill input packet success!358
+stream: 1fill input packet success!359
+stream: 1fill input packet success!360
+stream: 1fill input packet success!361
+stream: 1fill input packet success!362
+stream: 1fill input packet success!363
+stream: 1fill input packet success!364
+stream: 1fill input packet success!365
+stream: 1fill input packet success!366
+stream: 1fill input packet success!367
+stream: 1fill input packet success!368
+stream: 1fill input packet success!369
+stream: 1fill input packet success!370
+stream: 1fill input packet success!371
+stream: 1fill input packet success!372
+stream: 1fill input packet success!373
+stream: 1fill input packet success!374
+stream: 1fill input packet success!375
+stream: 1fill input packet success!376
+stream: 1fill input packet success!377
+stream: 1fill input packet success!378
+stream: 1fill input packet success!379
+stream: 1fill input packet success!380
+stream: 1fill input packet success!381
+stream: 1fill input packet success!382
+stream: 1fill input packet success!383
+stream: 1fill input packet success!384
+stream: 1fill input packet success!385
+stream: 1fill input packet success!386
+stream: 1fill input packet success!387
+stream: 1fill input packet success!388
+stream: 1fill input packet success!389
+stream: 1fill input packet success!390
+stream: 1fill input packet success!391
+stream: 1fill input packet success!392
+stream: 1fill input packet success!393
+stream: 1fill input packet success!394
+stream: 1fill input packet success!395
+stream: 1fill input packet success!396
+stream: 1fill input packet success!397
+stream: 1fill input packet success!398
+stream: 1fill input packet success!399
+stream: 1fill input packet success!400
+stream: 1fill input packet success!401
+stream: 1fill input packet success!402
+stream: 1fill input packet success!403
+stream: 1fill input packet success!404
+stream: 1fill input packet success!405
+stream: 1fill input packet success!406
+stream: 1fill input packet success!407
+stream: 1fill input packet success!408
+stream: 1fill input packet success!409
+stream: 1fill input packet success!410
+stream: 1fill input packet success!411
+stream: 1fill input packet success!412
+stream: 1fill input packet success!413
+stream: 1fill input packet success!414
+stream: 1fill input packet success!415
+stream: 1fill input packet success!416
+stream: 1fill input packet success!417
+stream: 1fill input packet success!418
+stream: 1fill input packet success!419
+stream: 1fill input packet success!420
+stream: 1fill input packet success!421
+stream: 1fill input packet success!422
+stream: 1fill input packet success!423
+stream: 1fill input packet success!424
+stream: 1fill input packet success!425
+stream: 1fill input packet success!426
+stream: 1fill input packet success!427
+stream: 1fill input packet success!428
+stream: 1fill input packet success!429
+stream: 1fill input packet success!430
+[2024-06-02 08:50:10.056] [info] node id:0 decode flushing
+[2024-06-02 08:50:10.056] [info] node id:0 Process node end
+[2024-06-02 08:50:10.057] [info] node id:0 close node
+[2024-06-02 08:50:10.057] [info] node 0 close report, closed count: 1
+[2024-06-02 08:50:10.057] [info] node id:1 eof received
+[2024-06-02 08:50:10.057] [info] node id:1 eof processed, remove node from scheduler
+[2024-06-02 08:50:10.057] [info] node id:2 eof received
+[2024-06-02 08:50:10.057] [info] node id:2 eof processed, remove node from scheduler
+stream: 1fill input packet success!431
+[2024-06-02 08:50:10.057] [info] node id:1 process eof, add node to scheduler
+[2024-06-02 08:50:10.522] [info] node id:1 Process node end
+[2024-06-02 08:50:10.522] [info] node id:1 close node
+[2024-06-02 08:50:10.522] [info] node 1 close report, closed count: 2
+[2024-06-02 08:50:10.522] [info] node id:2 eof received
+[2024-06-02 08:50:10.522] [info] node id:2 eof processed, remove node from scheduler
+[2024-06-02 08:50:10.522] [info] node id:2 process eof, add node to scheduler
+[2024-06-02 08:50:10.540] [info] node id:2 Process node end
+[2024-06-02 08:50:10.541] [info] node id:2 close node
+[2024-06-02 08:50:10.541] [info] node 2 close report, closed count: 3
+[2024-06-02 08:50:10.541] [info] schedule queue 0 start to join thread
+[2024-06-02 08:50:10.541] [info] schedule queue 0 thread quit
+[2024-06-02 08:50:10.542] [info] schedule queue 0 closed
+[2024-06-02 08:50:10.542] [info] schedule queue 1 start to join thread
+[2024-06-02 08:50:10.542] [info] schedule queue 1 thread quit
+[2024-06-02 08:50:10.542] [info] schedule queue 1 closed
+[2024-06-02 08:50:10.542] [info] all scheduling threads were joint
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab0f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 271
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab530>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 272
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab030>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 273
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabcb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 274
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab9b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 275
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab230>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 276
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab5f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 277
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab4f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 278
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab870>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 279
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab3b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 280
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab730>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 281
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab170>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 282
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aabeb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 283
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab770>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 284
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab130>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 285
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 286
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab130>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 287
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 288
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 289
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab130>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 290
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91aab8f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 291
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0f30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 292
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0a30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 293
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0e70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 294
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab07b0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 295
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab03f0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 296
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0170>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 297
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0df0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 298
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0eb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 299
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0f70>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 300
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0e30>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 301
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0cf0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 302
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0bb0>
+yuv420p convert into rgb24 done! 1
+enhance frame count: 303
+enhance module process done!
+<bmf.lib._bmf.sdk.Packet object at 0x7fde91ab0a70>
+[2024-06-02 08:50:10.596] [info] schedule queue 0 start to join thread
+[2024-06-02 08:50:10.596] [info] schedule queue 0 closed
+[2024-06-02 08:50:10.596] [info] schedule queue 1 start to join thread
+[2024-06-02 08:50:10.596] [info] schedule queue 1 closed
+[2024-06-02 08:50:10.596] [info] all scheduling threads were joint
+[2024-06-02 08:50:10.598] [info] node id:0 video frame decoded:303
+[2024-06-02 08:50:10.598] [info] node id:0 audio frame decoded:431, sample decoded:441344
