@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -std=c++17 -shared -Wl,-soname,libcopy_module.so -o libcopy_module.so CMakeFiles/copy_module.dir/copy_module.o   -L/root/workspace/bmf_OSPP/output/bmf/lib  -Wl,-rpath,/root/workspace/bmf_OSPP/output/bmf/lib -lbmf_module_sdk 

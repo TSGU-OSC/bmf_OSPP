@@ -22,7 +22,6 @@ from base_test.media_info import MediaInfo
 
 sys.path.append("./c_module")
 
-
 class TestVideoCModule(BaseTestCase):
 
     @timeout_decorator.timeout(seconds=120)
@@ -35,7 +34,7 @@ class TestVideoCModule(BaseTestCase):
         # decode
         video = bmf.graph().decode({'input_path': input_video_path})
         # c module processing
-        video_2 = (video['video'].c_module("cpp_copy_module"))
+        video_2 = (video['video'].c_module("cpp_copy_module","./libcopy_module.so","copy_module::CopyModule"))
 
         # encode
         (bmf.encode(
@@ -60,7 +59,7 @@ class TestVideoCModule(BaseTestCase):
         expect_result = 'output.jpg|240|320|0.040000|IMAGE2|975400|4877|mjpeg|{"fps": "25.0"}'
         self.remove_result_data(output_path)
         (bmf.graph().decode({'input_path': input_video_path})['video'].scale(
-            320, 240).c_module("cpp_copy_module").encode(
+            320, 240).c_module("cpp_copy_module","./libcopy_module.so","copy_module::CopyModule").encode(
                 None, {
                     "output_path": output_path,
                     "format": "mjpeg",
