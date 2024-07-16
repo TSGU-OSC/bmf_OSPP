@@ -9,7 +9,7 @@ LDFLAGS = -L/root/workspace/bmf_OSPP/output/bmf/lib \
 LIBS = -lengine -lbmf_module_sdk -lhmp -lgtest -lgtest_main -lpthread
 
 # Find all cpp files except call_back_for_test.cpp
-SRCS = $(filter-out call_back_for_test.cpp, $(wildcard *.cpp))
+SRCS = $(filter-out call_back_for_test.cpp $(wildcard *.cpp))
 
 # Create list of executables
 TARGETS = $(SRCS:.cpp=)
