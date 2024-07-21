@@ -19,6 +19,9 @@
 #include <bmf/sdk/bmf.h>
 #include <bmf/sdk/packet.h>
 
+#include <unistd.h>
+#define MS 1000
+
 USE_BMF_SDK_NS
 
 class CopyModule : public Module {
@@ -28,6 +31,8 @@ class CopyModule : public Module {
     ~CopyModule() {}
 
     virtual int process(Task &task);
+
+    Packet copy(Packet &pkt);
 };
 
 #endif
