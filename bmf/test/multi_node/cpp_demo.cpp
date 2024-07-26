@@ -16,28 +16,35 @@
 #include "builder.hpp"
 #include "nlohmann/json.hpp"
 
-int main() {
-
-    nlohmann::json graph_para = {{"dump_graph", 1}};
-    auto graph = bmf::builder::Graph(bmf::builder::NormalMode,
-                                     bmf_sdk::JsonParam(graph_para));
+void task(){
+    int scheduler_cnt = 0;
+    auto graph = bmf::builder::Graph(bmf::builder::NormalMode);
 
     nlohmann::json decode_para = {
         {"input_path", "../../files/big_bunny_10s_30fps.mp4"}};
-    auto video = graph.Decode(bmf_sdk::JsonParam(decode_para));
+    auto video = graph.Decode(bmf_sdk::JsonParam(decode_para),"" , scheduler_cnt++);
 
-    auto video_2 =
+    auto video_copied =
         graph.Module({video["video"]}, "copy_module", bmf::builder::CPP,
                         bmf_sdk::JsonParam(), "CopyModule",
-                        "./libcopy_module.so", "copy_module:CopyModule");
+                        "./libcopy_module.so", "copy_module:CopyModule",
+                        bmf::builder::Immediate, scheduler_cnt++);
 
 
     nlohmann::json encode_para = {
         {"output_path", "./rgb2video.mp4"},
     };
 
-    graph.Encode(video, video["audio"],
-                 bmf_sdk::JsonParam(encode_para));
+    graph.Encode(video_copied,
+                 bmf_sdk::JsonParam(encode_para),
+                 "", scheduler_cnt++);
 
+    nlohmann::json graph_para = {{"dump_graph", 1},
+                                 {"scheduler_count", scheduler_cnt}};
+    graph.SetOption(bmf_sdk::JsonParam(graph_para));
     graph.Run();
+}
+
+int main() {
+    task();
 }
