@@ -25,8 +25,7 @@ int CopyModule::process(Task &task) {
     for (it = input_queue_map.begin(); it != input_queue_map.end(); it++) {
         // input stream label
         int label = it->first;
-        while (it->second->size() >= multi_node_nums)
-        {
+        // while (it->second->size() >= multi_node_nums){
             // input packet queue
             Packet pkt;
             int count = 0;
@@ -45,9 +44,9 @@ int CopyModule::process(Task &task) {
 
                 task.fill_output_packet(label, output_pkt);
                 count++;
-                if (count >= 3) break; 
+                //if (count >= 3) return 0; 
             }
-        }
+        //}
     }
     return 0;
 }

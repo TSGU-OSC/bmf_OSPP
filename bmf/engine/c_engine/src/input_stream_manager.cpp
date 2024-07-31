@@ -612,6 +612,70 @@ bool ClockBasedSyncInputStreamManager::fill_task_input(Task &task) {
     return true;
 }
 
+MultiNodeInputStreamManager::MultiNodeInputStreamManager(
+    int node_id, std::vector<StreamConfig> &input_streams,
+    std::vector<int> &output_stream_id_list, uint32_t max_queue_size,
+    InputStreamManagerCallBack &callback, int multi_node_nums)
+    : InputStreamManager(node_id, input_streams, output_stream_id_list,
+                         max_queue_size, callback) {
+    next_timestamp_ = 1;
+    multi_node_nums_ = multi_node_nums;
+}
+
+std::string MultiNodeInputStreamManager::type() { return "MultiNode"; }
+
+int64_t MultiNodeInputStreamManager::get_next_timestamp() {
+    std::lock_guard<std::mutex> _(mtx_);
+    next_timestamp_++;
+    return next_timestamp_;
+}
+
+NodeReadiness
+MultiNodeInputStreamManager::get_node_readiness(int64_t &min_timestamp) {
+    for (auto &input_stream : input_streams_) {
+        if (not input_stream.second->is_empty()) {
+            min_timestamp = get_next_timestamp();
+            return NodeReadiness::READY_FOR_PROCESS;
+        }
+    }
+    return NodeReadiness::NOT_READY;
+}
+
+bool MultiNodeInputStreamManager::fill_task_input(Task &task) {
+    bool task_filled = false;
+    for (auto &input_stream : input_streams_) {
+        if (input_stream.second->is_empty()) {
+            //            task.fill_input_packet(iter->second->get_id(),
+            //            Packet());
+            continue;
+        }
+
+        while (input_stream.second->queue_->size() >= multi_node_nums_ ) {
+            for (size_t i = 0; i < multi_node_nums_; i++)
+            {
+                Packet pkt = input_stream.second->pop_next_packet(false);
+                if (pkt.timestamp() == BMF_EOF) {
+                    if (input_stream.second->probed_) {
+                        BMFLOG(BMF_INFO)
+                            << "immediate sync got EOF from dynamical update";
+                        pkt.set_timestamp(DYN_EOS);
+                        input_stream.second->probed_ = false;
+                    } else
+                        stream_done_[input_stream.first] = 1;
+                }
+                task.fill_input_packet(input_stream.second->get_id(), pkt);
+                task_filled = true;
+            } 
+        }
+    }
+
+    if (stream_done_.size() == input_streams_.size()) {
+        task.set_timestamp(BMF_EOF);
+    }
+    return task_filled;
+}
+
+
 int create_input_stream_manager(
     std::string const &manager_type, int node_id,
     std::vector<StreamConfig> input_streams,

@@ -57,7 +57,10 @@ OutputStreamManager::OutputStreamManager(
 int OutputStreamManager::post_process(Task &task) {
     for (auto &t : task.outputs_queue_) {
         auto q = std::make_shared<SafeQueue<Packet>>(t.second);
+        output_streams_[t.first]->add_packets(q);
         output_streams_[t.first]->propagate_packets(q);
+        // static int cnt = 0;
+        // std::cout << "OSM post_process count :" << ++cnt << std::endl;
     }
     return 0;
 }

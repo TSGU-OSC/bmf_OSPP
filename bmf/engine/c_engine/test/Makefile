@@ -1,6 +1,6 @@
 # Define compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++17 -g
+CXXFLAGS = -std=c++17 -g -O0
 INCLUDES = -I/root/workspace/bmf_OSPP/output/bmf/include \
            -I/root/workspace/bmf_OSPP/bmf/hml/third_party/gtest/googletest/include \
 		   -I/root/workspace/bmf_OSPP/bmf/engine/c_engine/include
@@ -9,7 +9,7 @@ LDFLAGS = -L/root/workspace/bmf_OSPP/output/bmf/lib \
 LIBS = -lengine -lbmf_module_sdk -lhmp -lgtest -lgtest_main -lpthread
 
 # Find all cpp files except call_back_for_test.cpp
-SRCS = $(filter-out call_back_for_test.cpp $(wildcard *.cpp))
+SRCS = $(filter-out call_back_for_test.cpp, $(wildcard *.cpp))
 
 # Create list of executables
 TARGETS = $(SRCS:.cpp=)
