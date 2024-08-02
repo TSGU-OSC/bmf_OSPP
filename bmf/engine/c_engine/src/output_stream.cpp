@@ -63,9 +63,12 @@ int OutputStream::propagate_packets(
             auto copy_queue = std::make_shared<SafeQueue<Packet>>();
             copy_queue->push(pkt);
             copy_queue->set_identifier(identifier_);
+            /* original code for single node push pkts to input stream */
             s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
+            /* code for multi node output */
+            // s.input_stream_manager_->add_packets(s.stream_id_, copy_queue, node_id_);
 
-            std::cout << ++cnt << std::endl;
+            // std::cout << ++cnt << std::endl;
             stream_index = (stream_index + 1) % mirror_streams_.size();
         }
     }
@@ -80,6 +83,8 @@ int OutputStream::propagate_packets(
     return 0;
 }
 int OutputStream::add_upstream_nodes(int node_id) {
+    /* TODO: the node_id_ need to be placed right class like OuputStreamManager */
+    node_id_ = node_id;
     for (auto &s : mirror_streams_) {
         s.input_stream_manager_->add_upstream_nodes(node_id);
     }
@@ -90,6 +95,7 @@ int OutputStream::add_packets(std::shared_ptr<SafeQueue<Packet>> packets){
     Packet pkt;
     while (packets->pop(pkt)) {
         queue_->push(pkt);
+        std::cout << "pkt timestamp: " << pkt.timestamp() << std::endl;
         // advance time bounding
         // next_time_bounding_ = pkt.timestamp() + 1;
         // if received EOS, set stream done
@@ -98,9 +104,7 @@ int OutputStream::add_packets(std::shared_ptr<SafeQueue<Packet>> packets){
         if (pkt.timestamp() == EOS or pkt.timestamp() == BMF_EOF) {
             /* add EOF pkt for multi downstream node */
             for (size_t i = 1; i < mirror_streams_.size(); i++) {
-                Packet pkt(0);
-                pkt.set_timestamp(BMF_EOF);
-                queue_->push(pkt);
+                queue_->push(Packet::generate_eof_packet());
             }
             // next_time_bounding_ = DONE;
             // BMFLOG_NODE(BMF_INFO, node_id_) << "eof received";

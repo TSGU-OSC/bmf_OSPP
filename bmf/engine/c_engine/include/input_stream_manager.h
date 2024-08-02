@@ -73,9 +73,14 @@ class InputStreamManager {
 
     void add_packets(int stream_id, std::shared_ptr<SafeQueue<Packet>> packets);
 
+    void add_packets(int stream_id, std::shared_ptr<SafeQueue<Packet>> packets, 
+                     int upstream_node_id);
+
     int add_upstream_nodes(int node_id);
     void remove_upstream_nodes(int node_id);
     bool find_upstream_nodes(int node_id);
+
+    bool is_tem_queue_all_filled();    
 
     int node_id_;
     std::map<int, std::shared_ptr<InputStream>> input_streams_;
@@ -88,6 +93,8 @@ class InputStreamManager {
     int max_id_;
     std::mutex mtx_;
     std::set<int> upstream_nodes_;
+
+    std::map<int, std::shared_ptr<SafeQueue<Packet>>> tem_queue_;
 };
 
 class DefaultInputManager : public InputStreamManager {

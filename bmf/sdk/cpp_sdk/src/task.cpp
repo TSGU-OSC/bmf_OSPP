@@ -78,10 +78,12 @@ bool Task::fill_input_packet(int stream_id, Packet packet) {
         return false;
     }
     it->second->push(packet);
-    static int count_id_1 = 0, count_id_2 = 0, count_id_3;
+    static int count_id_1 = 0, count_id_2 = 0, count_id_3, count_id_4;
     if(stream_id == 0 && node_id_ == 1) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill input packet success!"<< ++count_id_1 <<"\n";
     if(stream_id == 0 && node_id_ == 2) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill input packet success!"<< ++count_id_2 <<"\n";
     if(stream_id == 0 && node_id_ == 3) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill input packet success!"<< ++count_id_3 <<"\n";
+
+    if(stream_id == 0 && node_id_ == 4) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill input packet success!"<< ++count_id_3 <<"\n";
     return true;
 }
 
@@ -91,9 +93,10 @@ bool Task::fill_output_packet(int stream_id, Packet packet) {
         return false;
     }
     it->second->push(packet);
-    static int count_id_1 = 0, count_id_2 = 0;
+    static int count_id_1 = 0, count_id_2 = 0, count_id_3;
     if(stream_id == 0 && node_id_ == 1) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill output packet success!"<< ++count_id_1 <<"\n";
     if(stream_id == 0 && node_id_ == 2) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill output packet success!"<< ++count_id_2 <<"\n";
+    if(stream_id == 0 && node_id_ == 3) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill output packet success!"<< ++count_id_3 <<"\n";
     return true;
 }
 

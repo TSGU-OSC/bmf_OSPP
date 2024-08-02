@@ -19,34 +19,31 @@ int CopyModule::process(Task &task) {
     //usleep(30*MS);
     PacketQueueMap &input_queue_map = task.get_inputs();
     PacketQueueMap::iterator it;
-    int multi_node_nums = 3;
 
     // process all input queues
     for (it = input_queue_map.begin(); it != input_queue_map.end(); it++) {
         // input stream label
         int label = it->first;
-        // while (it->second->size() >= multi_node_nums){
-            // input packet queue
-            Packet pkt;
-            int count = 0;
-            // process all packets in one input queue
-            while (task.pop_packet_from_input_queue(label, pkt)) {
-                // Get a input packet
 
-                // if packet is eof, set module done
-                if (pkt.timestamp() == BMF_EOF) {
-                    task.set_timestamp(DONE);
-                    task.fill_output_packet(label, Packet::generate_eof_packet());
-                    return 0;
-                }
+        // input packet queue
+        Packet pkt;
+        // process all packets in one input queue
+        while (task.pop_packet_from_input_queue(label, pkt)) {
+            // Get a input packet
 
-                auto output_pkt = copy(pkt);
-
-                task.fill_output_packet(label, output_pkt);
-                count++;
-                //if (count >= 3) return 0; 
+            // if packet is eof, set module done
+            if (pkt.timestamp() == BMF_EOF) {
+                task.set_timestamp(DONE);
+                task.fill_output_packet(label, Packet::generate_eof_packet());
+                return 0;
             }
-        //}
+
+            auto output_pkt = copy(pkt);
+
+            task.fill_output_packet(label, output_pkt);
+
+        }
+
     }
     return 0;
 }

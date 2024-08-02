@@ -140,6 +140,50 @@ void InputStreamManager::add_packets(
     }
 }
 
+void InputStreamManager::add_packets(
+    int stream_id, std::shared_ptr<SafeQueue<Packet>> packets, 
+    int upstream_node_id) {
+    // immediately return when node is closed
+    // graph_output_stream has no node_callback
+    if (callback_.node_is_closed_cb != NULL && callback_.node_is_closed_cb()) {
+        return;
+    }
+    // won't need to notify if empty pkt was passed in order to save schedule
+    // cost
+    if (packets->size() == 0)
+        return;
+    if (input_streams_.count(stream_id) > 0) {
+        // bool is_empty = input_streams_[stream_id]->is_empty();
+        /* tem store pkts for sorting */
+        auto it = tem_queue_.find(upstream_node_id);
+        if(it == tem_queue_.end()) {
+            BMFLOG(BMF_ERROR) << "Coundn't find right upstream to add pkts";
+            return;
+        }
+        Packet pkt;
+        while (packets->pop(pkt)) {
+            it->second->push(pkt);
+        }
+        if(is_tem_queue_all_filled()) {
+            // input_streams_[stream_id]->add_packets(packets);
+            for(auto queue : tem_queue_) {
+                // Packet tem_pkt;
+                queue.second->pop(pkt);
+                auto copy_queue = std::make_shared<SafeQueue<Packet>>();
+                copy_queue->push(pkt);
+                input_streams_[stream_id]->add_packets(copy_queue);
+            }
+            if (callback_.sched_required != NULL) {
+                // if (this->type() != "Immediate" || (this->type() == "Immediate"
+                // && is_empty))
+                // callback_.notify_cb();
+                callback_.sched_required(node_id_, false);
+            }
+        }
+
+    }
+}
+
 Packet InputStreamManager::pop_next_packet(int stream_id, bool block) {
     if (input_streams_.count(stream_id)) {
         auto stream = input_streams_[stream_id];
@@ -150,6 +194,13 @@ Packet InputStreamManager::pop_next_packet(int stream_id, bool block) {
 
 int InputStreamManager::add_upstream_nodes(int node_id) {
     upstream_nodes_.insert(node_id);
+
+    std::shared_ptr<SafeQueue<Packet>> tmp_queue =
+        std::make_shared<SafeQueue<Packet>>();
+    tem_queue_.insert(
+        std::pair<int, std::shared_ptr<SafeQueue<Packet>>>(
+            node_id, tmp_queue));
+
     return 0;
 }
 
@@ -159,6 +210,15 @@ void InputStreamManager::remove_upstream_nodes(int node_id) {
 
 bool InputStreamManager::find_upstream_nodes(int node_id) {
     return upstream_nodes_.find(node_id) != upstream_nodes_.end();
+}
+
+bool InputStreamManager::is_tem_queue_all_filled() {
+    int cnt = 0 ; 
+    for(auto queue : tem_queue_) {
+        if(queue.second->size() >= 1) cnt++;
+    }
+    if(cnt >= tem_queue_.size()) return true;
+    return false;
 }
 
 ImmediateInputStreamManager::ImmediateInputStreamManager(
