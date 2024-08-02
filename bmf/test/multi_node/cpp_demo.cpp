@@ -69,7 +69,7 @@ void mock_task() {
                         "copy_module", bmf::builder::CPP,
                         bmf_sdk::JsonParam(), "CopyModule",
                         "./libcopy_module.so", "copy_module:CopyModule",
-                        bmf::builder::Immediate, scheduler_cnt)
+                        bmf::builder::Immediate, scheduler_cnt++)
         );
         // auto video_copied =
         //     graph.Module({video["video"]}, 
@@ -85,7 +85,7 @@ void mock_task() {
                     "copy_module", bmf::builder::CPP,
                     bmf_sdk::JsonParam(), "CopyModule",
                     "./libcopy_module.so", "copy_module:CopyModule",
-                    bmf::builder::Immediate, ++scheduler_cnt);
+                    bmf::builder::Immediate, scheduler_cnt++);
     }
     
     /* single -> multi -> single(this)  */

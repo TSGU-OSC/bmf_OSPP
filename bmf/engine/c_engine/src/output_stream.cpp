@@ -41,10 +41,11 @@ int OutputStream::add_mirror_stream(
 int OutputStream::propagate_packets(
     std::shared_ptr<SafeQueue<Packet>> packets) {
     static int cnt = 0;
-    // while(queue_->size() >= mirror_streams_.size()) {
+    /* Do not Split */
+    // while (!queue_->empty()) {
     //     Packet pkt;
-    //     for (auto &s : mirror_streams_) {
-    //         if(queue_->pop(pkt)) {
+    //     if(queue_->pop(pkt)) {
+    //         for (auto &s : mirror_streams_) {
     //             auto copy_queue = std::make_shared<SafeQueue<Packet>>();
     //             copy_queue->push(pkt);
     //             copy_queue->set_identifier(identifier_);
@@ -53,7 +54,7 @@ int OutputStream::propagate_packets(
     //         }
     //     }
     // }
-
+    /* Data Splitting(Debuging) */
     while (!queue_->empty()) {
         Packet pkt;
         if (queue_->pop(pkt)) {
@@ -63,11 +64,14 @@ int OutputStream::propagate_packets(
             auto copy_queue = std::make_shared<SafeQueue<Packet>>();
             copy_queue->push(pkt);
             copy_queue->set_identifier(identifier_);
+            BMFLOG(BMF_INFO) << "Stream_index: " << stream_index 
+                             << "\tmirror_streams' size: " << mirror_streams_.size()
+                             << "\tCount :" << ++cnt;
             /* original code for single node push pkts to input stream */
             s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
-            /* code for multi node output */
+            /* code for multi node output(do not use it for now) */
             // s.input_stream_manager_->add_packets(s.stream_id_, copy_queue, node_id_);
-
+            
             // std::cout << ++cnt << std::endl;
             stream_index = (stream_index + 1) % mirror_streams_.size();
         }
@@ -95,7 +99,7 @@ int OutputStream::add_packets(std::shared_ptr<SafeQueue<Packet>> packets){
     Packet pkt;
     while (packets->pop(pkt)) {
         queue_->push(pkt);
-        std::cout << "pkt timestamp: " << pkt.timestamp() << std::endl;
+        std::cout << "output stream's address:" << this << "\tqueue's address:" << &queue_ << "\tpkt timestamp: " << pkt.timestamp() << std::endl;
         // advance time bounding
         // next_time_bounding_ = pkt.timestamp() + 1;
         // if received EOS, set stream done
