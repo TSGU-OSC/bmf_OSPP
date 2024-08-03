@@ -47,6 +47,7 @@ class OutputStream {
 
     int add_packets(std::shared_ptr<SafeQueue<Packet>> packets);
     /* TODO: the node_id_ need to be placed right class like OuputStreamManager */
+    size_t stream_index_ = 0;
     int node_id_;
     int stream_id_;
     std::string identifier_;

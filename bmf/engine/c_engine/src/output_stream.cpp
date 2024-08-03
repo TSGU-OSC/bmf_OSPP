@@ -58,13 +58,15 @@ int OutputStream::propagate_packets(
     while (!queue_->empty()) {
         Packet pkt;
         if (queue_->pop(pkt)) {
-            static size_t stream_index = 0; // To keep track of the current stream in mirror_streams_
+            /* TODO this variable need to be stored in stack */
+            //static size_t stream_index = 0; // To keep track of the current stream in mirror_streams_
 
-            auto &s = mirror_streams_[stream_index];
+            auto &s = mirror_streams_[stream_index_];
             auto copy_queue = std::make_shared<SafeQueue<Packet>>();
             copy_queue->push(pkt);
             copy_queue->set_identifier(identifier_);
-            BMFLOG(BMF_INFO) << "Stream_index: " << stream_index 
+            BMFLOG(BMF_INFO) << "Node id: " << node_id_
+                             << "\tStream_index: " << stream_index_ 
                              << "\tmirror_streams' size: " << mirror_streams_.size()
                              << "\tCount :" << ++cnt;
             /* original code for single node push pkts to input stream */
@@ -73,7 +75,7 @@ int OutputStream::propagate_packets(
             // s.input_stream_manager_->add_packets(s.stream_id_, copy_queue, node_id_);
             
             // std::cout << ++cnt << std::endl;
-            stream_index = (stream_index + 1) % mirror_streams_.size();
+            stream_index_ = (stream_index_ + 1) % mirror_streams_.size();
         }
     }
 
