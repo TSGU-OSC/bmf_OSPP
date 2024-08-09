@@ -167,7 +167,7 @@ class SplitOutputManager : public OutputStreamManager {
 }
 ```
 
-那么在builder内部，如果设置了`mutltiCnt` 就要将OSM设置初始化为`SplitOutputManager`
+那么在builder和graph内部，如果设置了`mutltiCnt` 就要将OSM设置初始化为`SplitOutputManager`
 
 至此 数据拆分的部分完成
 
