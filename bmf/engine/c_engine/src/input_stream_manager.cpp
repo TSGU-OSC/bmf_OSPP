@@ -139,10 +139,14 @@ void InputStreamManager::add_packets(
         }
     }
 }
-
+/* Data Assembly(Debugging) */
 void InputStreamManager::add_packets(
     int stream_id, std::shared_ptr<SafeQueue<Packet>> packets, 
     int upstream_node_id) {
+    /* imeediately return when ISM is blocked */
+    // if(input_block_) {
+    //     return;
+    // }
     // immediately return when node is closed
     // graph_output_stream has no node_callback
     if (callback_.node_is_closed_cb != NULL && callback_.node_is_closed_cb()) {
@@ -161,25 +165,69 @@ void InputStreamManager::add_packets(
             return;
         }
         Packet pkt;
+        static size_t push_count = 0;
         while (packets->pop(pkt)) {
             it->second->push(pkt);
+            // if(upstream_node_id == 4) {
+            //     std::cout << "upstream_node_id: " << upstream_node_id
+            //                     << "\tstorage: " << it->second->size()
+            //                     // << "\tpush count:" << ++push_count_[it->first]    
+            //                     << "\tpush count totally: " << ++push_count
+            //                     << "\tpkt's timestamp:" << pkt.timestamp()
+            //                     << std::endl;
+            // }
+            
         }
-        if(is_tem_queue_all_filled()) {
+
+        //if(is_tem_queue_all_filled()) {
             // input_streams_[stream_id]->add_packets(packets);
-            for(auto queue : tem_queue_) {
+            /* cache all pkts into first stream */
+            while(!tem_queue_[queue_index_ + first_upstream_node_id_]->empty() && stream_id == 0) {
                 // Packet tem_pkt;
-                queue.second->pop(pkt);
-                auto copy_queue = std::make_shared<SafeQueue<Packet>>();
-                copy_queue->push(pkt);
-                input_streams_[stream_id]->add_packets(copy_queue);
+                
+                auto queue = tem_queue_.find(queue_index_ + first_upstream_node_id_);
+                static size_t pop_count = 0;
+                /* avoid multi OS execute this code at same time */
+                // std::lock_guard<std::mutex> guard(add_pkts_mutex_);
+                /* avoid multi outputstream into this code at same time */
+                if(queue->second->pop(pkt)) {
+                    // if(pkt.timestamp() == BMF_EOF) input_block_ = true;
+                    auto copy_queue = std::make_shared<SafeQueue<Packet>>();
+                    copy_queue->push(pkt);
+                    input_streams_[stream_id]->add_packets(copy_queue);
+                    /* remove useless input stream but first input stream */
+                    // if(pkt.timestamp() == BMF_EOF) {
+                    //     int streams_cnt = stream_id_list_.size();
+                    //     for (size_t i = 1; i < streams_cnt; i++) {
+                    //         remove_stream(i);
+                    //     }
+                    //     erase_tem_queue();
+                    // }
+                } else {
+                    return;
+                }
+                // if(upstream_node_id != 0 && upstream_node_id != 4) {
+                //     std::cout << "queue_index_: " << queue_index_ 
+                //                     // << "\tfirst upstream_node_id:" << first_upstream_node_id_
+                //                     << "\tqueue id: " << queue->first
+                //                     << "\tstorage: " << queue->second->size()
+                //                     // << "\tpop count:" << ++(pop_count_[queue->first])
+                //                     << "\tpop count totally:" << ++pop_count
+                //                     << "\tpkt's timestamp: " <<pkt.timestamp()
+                //                     << std::endl;
+                // } 
+
+                queue_index_ = ( queue_index_ + 1 ) % tem_queue_.size();
+                /* execute this after add packets success */
+                if (callback_.sched_required != NULL) {
+                    // if (this->type() != "Immediate" || (this->type() == "Immediate"
+                    // && is_empty))
+                    // callback_.notify_cb();
+                    callback_.sched_required(node_id_, false);
+                }
             }
-            if (callback_.sched_required != NULL) {
-                // if (this->type() != "Immediate" || (this->type() == "Immediate"
-                // && is_empty))
-                // callback_.notify_cb();
-                callback_.sched_required(node_id_, false);
-            }
-        }
+
+        //}
 
     }
 }
@@ -200,7 +248,8 @@ int InputStreamManager::add_upstream_nodes(int node_id) {
     tem_queue_.insert(
         std::pair<int, std::shared_ptr<SafeQueue<Packet>>>(
             node_id, tmp_queue));
-
+    /* init the queue index is first node id */
+    first_upstream_node_id_ = tem_queue_.begin()->first;
     return 0;
 }
 
@@ -219,6 +268,15 @@ bool InputStreamManager::is_tem_queue_all_filled() {
     }
     if(cnt >= tem_queue_.size()) return true;
     return false;
+}
+
+bool InputStreamManager::erase_tem_queue() {
+    for(auto queue : tem_queue_) {
+        Packet pkt;
+        while(queue.second->pop(pkt)) {
+
+        }
+    }
 }
 
 ImmediateInputStreamManager::ImmediateInputStreamManager(
@@ -276,6 +334,7 @@ bool ImmediateInputStreamManager::fill_task_input(Task &task) {
 
     if (stream_done_.size() == input_streams_.size()) {
         task.set_timestamp(BMF_EOF);
+        if(node_id_ == 4) BMFLOG(BMF_INFO) << "node 4 task set BMF_EOF";
     }
     return task_filled;
 }

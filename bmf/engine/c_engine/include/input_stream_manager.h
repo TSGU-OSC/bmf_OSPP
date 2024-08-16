@@ -80,7 +80,9 @@ class InputStreamManager {
     void remove_upstream_nodes(int node_id);
     bool find_upstream_nodes(int node_id);
 
-    bool is_tem_queue_all_filled();    
+    bool is_tem_queue_all_filled();
+
+    bool erase_tem_queue();    
 
     int node_id_;
     std::map<int, std::shared_ptr<InputStream>> input_streams_;
@@ -93,8 +95,14 @@ class InputStreamManager {
     int max_id_;
     std::mutex mtx_;
     std::set<int> upstream_nodes_;
-
+    /* add code tem */
+    std::mutex add_pkts_mutex_;
+    size_t first_upstream_node_id_;
+    size_t queue_index_ = 0;
     std::map<int, std::shared_ptr<SafeQueue<Packet>>> tem_queue_;
+    bool input_block_ = false;
+    // std::vector<int> push_count_ = {0, 0, 0};
+    // std::vector<int> pop_count_ = {0, 0, 0};
 };
 
 class DefaultInputManager : public InputStreamManager {

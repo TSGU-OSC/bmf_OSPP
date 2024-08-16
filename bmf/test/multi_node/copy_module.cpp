@@ -39,6 +39,8 @@ int CopyModule::process(Task &task) {
             }
 
             auto output_pkt = copy(pkt);
+            /* copy timestamp */
+            output_pkt.set_timestamp(pkt.timestamp());
 
             task.fill_output_packet(label, output_pkt);
 
