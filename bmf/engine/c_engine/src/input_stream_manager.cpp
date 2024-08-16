@@ -100,7 +100,12 @@ bool InputStreamManager::schedule_node() {
     int64_t min_timestamp;
     NodeReadiness node_readiness = get_node_readiness(min_timestamp);
     if (node_readiness == NodeReadiness::READY_FOR_PROCESS) {
-
+        if(node_id_ == 4) {
+            while(stream_id_list_.size() > 1) {
+                stream_id_list_.pop_back();
+            }
+            BMFLOG(BMF_INFO) << "node id" << node_id_ << "\tstream id list: " << stream_id_list_.size();
+        }
         Task task = Task(node_id_, stream_id_list_, output_stream_id_list_);
         task.set_timestamp(min_timestamp);
 
@@ -182,7 +187,7 @@ void InputStreamManager::add_packets(
         //if(is_tem_queue_all_filled()) {
             // input_streams_[stream_id]->add_packets(packets);
             /* cache all pkts into first stream */
-            while(!tem_queue_[queue_index_ + first_upstream_node_id_]->empty() && stream_id == 0) {
+            while(!tem_queue_[queue_index_ + first_upstream_node_id_]->empty() && stream_id == stream_id_list_.front()) {
                 // Packet tem_pkt;
                 
                 auto queue = tem_queue_.find(queue_index_ + first_upstream_node_id_);

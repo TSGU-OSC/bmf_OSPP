@@ -182,3 +182,22 @@ class SplitOutputManager : public OutputStreamManager {
     int stream_id, std::shared_ptr<SafeQueue<Packet>> packets, int upstream_node_id);` 
 
 所以也不会影响原有框架的功能实现
+
+
+### 8.16进展
+
+已完成功能验证，并成功将处理效率提升三倍（三个多开节点）
+![alt text](image.png)
+
+### 模型图
+
+![alt text](BMF多节点并行计算模型.jpg)
+
+### 疑点
+
+多开节点处理过程后期可能会卡住（往往在node1-3close后，node4就停止处理），如图
+
+![alt text](image-1.png)
+
+猜测：
+可能与graph调度机制有关，有待深入debug
