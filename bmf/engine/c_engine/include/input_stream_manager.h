@@ -96,13 +96,9 @@ class InputStreamManager {
     std::mutex mtx_;
     std::set<int> upstream_nodes_;
     /* add code tem */
-    std::mutex add_pkts_mutex_;
     size_t first_upstream_node_id_;
     size_t queue_index_ = 0;
     std::map<int, std::shared_ptr<SafeQueue<Packet>>> tem_queue_;
-    bool input_block_ = false;
-    // std::vector<int> push_count_ = {0, 0, 0};
-    // std::vector<int> pop_count_ = {0, 0, 0};
 };
 
 class DefaultInputManager : public InputStreamManager {
@@ -218,32 +214,6 @@ class ClockBasedSyncInputStreamManager : public InputStreamManager {
     std::map<int, std::queue<Packet>> cache_;
     std::map<int, Packet> last_pkt_;
     std::set<int> stream_paused_;
-};
-
-class MultiNodeInputStreamManager : public InputStreamManager {
-  public:
-    MultiNodeInputStreamManager(int node_id,
-                                std::vector<StreamConfig> &input_streams,
-                                std::vector<int> &output_stream_id_list,
-                                uint32_t max_queue_size,
-                                InputStreamManagerCallBack &callback,
-                                int multi_node_nums);
-
-    std::string type() override;
-
-    int64_t get_next_timestamp();
-
-    NodeReadiness get_node_readiness(int64_t &min_timestamp) override;
-
-    bool fill_task_input(Task &task) override;
-
-    //    void get_stream(std::string stream_id);
-    //    void pop_next_packet(std::string stream_id, bool block = true);
-
-    //    bool schedule_node();
-    int64_t next_timestamp_;
-
-    int multi_node_nums_;
 };
 
 int create_input_stream_manager(

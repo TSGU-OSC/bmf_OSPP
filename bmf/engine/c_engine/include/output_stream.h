@@ -42,6 +42,8 @@ class OutputStream {
                       int stream_id);
 
     int propagate_packets(std::shared_ptr<SafeQueue<Packet>> packets);
+    /* spilt pkts for multi downstream node */
+    int split_packets(std::shared_ptr<SafeQueue<Packet>> packets);
 
     int add_upstream_nodes(int node_id);
 

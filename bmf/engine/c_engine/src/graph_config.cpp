@@ -180,6 +180,8 @@ void NodeConfig::init(nlohmann::json &node_config) {
         scheduler = node_config.at("scheduler").get<int>();
     if (node_config.count("input_manager"))
         input_manager = node_config.at("input_manager").get<std::string>();
+    if (node_config.count("output_manager"))
+        output_manager = node_config.at("output_manager").get<std::string>();
     if (node_config.count("alias"))
         alias = node_config.at("alias").get<std::string>();
     if (node_config.count("action"))
@@ -193,6 +195,8 @@ JsonParam NodeConfig::get_option() { return option; }
 void NodeConfig::set_option(JsonParam node_option) { option = node_option; }
 
 std::string NodeConfig::get_input_manager() { return input_manager; }
+
+std::string NodeConfig::get_output_manager() { return output_manager; }
 
 NodeMetaInfo NodeConfig::get_node_meta() { return meta; }
 

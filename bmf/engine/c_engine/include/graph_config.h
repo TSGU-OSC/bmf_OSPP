@@ -147,6 +147,8 @@ class NodeConfig {
 
     std::string get_input_manager();
 
+    std::string get_output_manager();
+
     int get_id();
 
     int get_scheduler();
@@ -170,6 +172,7 @@ class NodeConfig {
     JsonParam option;
     int scheduler;
     std::string input_manager = "immediate";
+    std::string output_manager = "default";
     std::string alias;
     std::string action;
 

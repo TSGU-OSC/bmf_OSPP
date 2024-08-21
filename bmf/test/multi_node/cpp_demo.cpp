@@ -16,29 +16,50 @@
 #include "builder.hpp"
 #include "nlohmann/json.hpp"
 
+
 void task() {
+    size_t multi_nums = 3;
     int scheduler_cnt = 0;
     auto graph = bmf::builder::Graph(bmf::builder::NormalMode);
 
     nlohmann::json decode_para = {
         {"input_path", "../../files/big_bunny_10s_30fps.mp4"}};
-    auto video = graph.Decode(bmf_sdk::JsonParam(decode_para),"" , scheduler_cnt++);
+    auto video = graph.Decode(bmf_sdk::JsonParam(decode_para), "", scheduler_cnt++);
 
-    for (size_t i = 0; i < 3; i++) {
-        auto video_copied =
-            graph.Module({video["video"]}, "copy_module", bmf::builder::CPP,
-                            bmf_sdk::JsonParam(), "CopyModule",
-                            "./libcopy_module.so", "copy_module:CopyModule",
-                            bmf::builder::Immediate, scheduler_cnt++);
-    }  
+    std::vector<bmf::builder::Node> video_copied;
+    for (size_t i = 0; i < multi_nums; i++) {
+        video_copied.push_back(
+            graph.Module({video["video"]}, 
+                        "copy_module", bmf::builder::CPP,
+                        bmf_sdk::JsonParam(), "CopyModule",
+                        "./libcopy_module.so", "copy_module:CopyModule",
+                        bmf::builder::Immediate, scheduler_cnt++)
+        );
+    }
 
-    // nlohmann::json encode_para = {
-    //     {"output_path", "./rgb2video.mp4"},
-    // };
+    // video_copied.push_back(
+    //     graph.Module({video_copied[0], video_copied[1], video_copied[2]}, 
+    //                 "pass_through", bmf::builder::CPP,
+    //                 bmf_sdk::JsonParam(), "PassThroughModule",
+    //                 "/root/workspace/bmf_OSPP/output/bmf/cpp_modules/Module_pass_through/libpass_through.so", "pass_through:PassThroughModule",
+    //                 bmf::builder::Immediate, scheduler_cnt++)
+    // );
+    video_copied.push_back(
+        graph.Module({video_copied[0], video_copied[1], video_copied[2]}, 
+                    "assemble_module", bmf::builder::CPP,
+                    bmf_sdk::JsonParam(), "AssembleModule",
+                    "./libassemble_module.so", "assemble_module:AssembleModule",
+                    bmf::builder::Immediate, scheduler_cnt++)
+    );
 
-    // graph.Encode(video_copied,
-    //              bmf_sdk::JsonParam(encode_para),
-    //              "", scheduler_cnt++);
+    nlohmann::json encode_para = {
+        {"output_path", "./rgb2video.mp4"},
+    };
+    graph.Module({video_copied[3]},
+            "c_ffmpeg_encoder", bmf::builder::CPP,
+            bmf_sdk::JsonParam(encode_para), "",
+            "", "",
+            bmf::builder::Immediate, scheduler_cnt++);
 
     nlohmann::json graph_para = {{"dump_graph", 1},
                                  {"scheduler_count", scheduler_cnt}};
@@ -64,6 +85,15 @@ void mock_task() {
     //                             bmf::builder::Immediate, scheduler_cnt);
     std::vector<bmf::builder::Node> video_copied;
     for (size_t i = 0; i < multi_nums; i++) {
+        /* pass through module */
+        // video_copied.push_back(
+        //     graph.Module({video["video"]}, 
+        //                 "pass_through", bmf::builder::CPP,
+        //                 bmf_sdk::JsonParam(), "PassThroughModule",
+        //                 "/root/workspace/bmf_OSPP/output/bmf/cpp_modules/Module_pass_through/libpass_through.so", "pass_through:PassThroughModule",
+        //                 bmf::builder::Immediate, scheduler_cnt++)
+        // );
+        /* c_copy_module */
         video_copied.push_back(
             graph.Module({video["video"]}, 
                         "copy_module", bmf::builder::CPP,
@@ -88,7 +118,16 @@ void mock_task() {
     //                 bmf::builder::Immediate, scheduler_cnt++);
     // }
     
-    /* single -> multi -> single(this)  */
+    /* single -> multi -> single(this) -> single  */
+    /* pass through module */
+    video_copied.push_back(
+        graph.Module({video_copied[0], video_copied[1], video_copied[2]}, 
+                    "pass_through", bmf::builder::CPP,
+                    bmf_sdk::JsonParam(), "PassThroughModule",
+                    "/root/workspace/bmf_OSPP/output/bmf/cpp_modules/Module_pass_through/libpass_through.so", "pass_through:PassThroughModule",
+                    bmf::builder::Immediate, scheduler_cnt++)
+    );
+    /* c_copy_module */
     // video_copied.push_back(
     //     graph.Module({video_copied[0], video_copied[1], video_copied[2]}, 
     //                 "copy_module", bmf::builder::CPP,
@@ -122,23 +161,23 @@ void mock_task() {
     //              bmf_sdk::JsonParam(encode_para),
     //              "", scheduler_cnt++);
     /* three input stream, one encoder */
-    nlohmann::json encode_para = {
-        {"output_path", "./rgb2video.mp4"},
-    };
-    graph.Module({video_copied[0], video_copied[1], video_copied[2]},
-            "c_ffmpeg_encoder", bmf::builder::CPP,
-            bmf_sdk::JsonParam(encode_para), "",
-            "", "",
-            bmf::builder::Immediate, scheduler_cnt++);
-    /* 1 -> 3 -> 1 -> 1 */
     // nlohmann::json encode_para = {
     //     {"output_path", "./rgb2video.mp4"},
     // };
-    // graph.Module({video_copied[3]},
+    // graph.Module({video_copied[0], video_copied[1], video_copied[2]},
     //         "c_ffmpeg_encoder", bmf::builder::CPP,
     //         bmf_sdk::JsonParam(encode_para), "",
     //         "", "",
     //         bmf::builder::Immediate, scheduler_cnt++);
+    /* 1 -> 3 -> 1 -> 1 */
+    nlohmann::json encode_para = {
+        {"output_path", "./rgb2video.mp4"},
+    };
+    graph.Module({video_copied[3]},
+            "c_ffmpeg_encoder", bmf::builder::CPP,
+            bmf_sdk::JsonParam(encode_para), "",
+            "", "",
+            bmf::builder::Immediate, scheduler_cnt++);
 
     nlohmann::json graph_para = {{"dump_graph", 1},
                                  {"scheduler_count", scheduler_cnt}};
@@ -147,6 +186,6 @@ void mock_task() {
 }
 
 int main() {
-    // task();
-    mock_task();
+    task();
+    // mock_task();
 }

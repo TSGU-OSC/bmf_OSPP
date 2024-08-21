@@ -7,15 +7,19 @@ LDFLAGS = -L/root/workspace/bmf_OSPP/output/bmf/lib
 LIBS = -lengine -lbmf_module_sdk -lhmp -lpthread 
 
 # Source files
-LIB_SRCS = copy_module.cpp
+LIB_SRCS_COPY = copy_module.cpp
+LIB_SRCS_ASSEMBLE = assemble_module.cpp
 MAIN_SRCS = cpp_demo.cpp
 
 # Object files
-LIB_OBJS = $(LIB_SRCS:.cpp=.o)
+LIB_OBJS_COPY = $(LIB_SRCS_COPY:.cpp=.o)
+LIB_OBJS_ASSEMBLE = $(LIB_SRCS_ASSEMBLE:.cpp=.o)
 MAIN_OBJS = $(MAIN_SRCS:.cpp=.o)
 
 # Dynamic library
-DYNAMIC_LIB = libcopy_module.so
+DYNAMIC_LIB_COPY = libcopy_module.so
+
+DYNAMIC_LIB_ASSEMBLE = libassemble_module.so
 
 # Default target
 all: cpp_demo
@@ -24,17 +28,21 @@ all: cpp_demo
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $< $(INCLUDES)
 
-# Rule to create the dynamic library
-$(DYNAMIC_LIB): $(LIB_OBJS)
+# Rule to create the dynamic library for copy module
+$(DYNAMIC_LIB_COPY): $(LIB_OBJS_COPY)
+	$(CXX) $(CXXFLAGS) -shared -o $@ $^
+
+# Rule to create the dynamic library for assemble module
+$(DYNAMIC_LIB_ASSEMBLE): $(LIB_OBJS_ASSEMBLE)
 	$(CXX) $(CXXFLAGS) -shared -o $@ $^
 
 # Rule to create the executable with dynamic library
-cpp_demo: $(MAIN_OBJS) $(DYNAMIC_LIB)
+cpp_demo: $(MAIN_OBJS) $(DYNAMIC_LIB_COPY) $(DYNAMIC_LIB_ASSEMBLE) 
 	$(CXX) $(CXXFLAGS) -o $@ $(MAIN_OBJS) -L. -lcopy_module $(LDFLAGS) $(LIBS)
 
 # Clean up build files
 clean:
-	rm -f $(LIB_OBJS) $(MAIN_OBJS) cpp_demo $(DYNAMIC_LIB)
+	rm -f $(LIB_OBJS_COPY) $(LIB_OBJS_ASSEMBLE) $(MAIN_OBJS) cpp_demo $(DYNAMIC_LIB_COPY) $(DYNAMIC_LIB_ASSEMBLE)
 
 .PHONY: all clean
 
