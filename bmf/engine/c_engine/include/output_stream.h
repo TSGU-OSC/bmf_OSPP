@@ -47,7 +47,6 @@ class OutputStream {
 
     int add_upstream_nodes(int node_id);
 
-    int add_packets(std::shared_ptr<SafeQueue<Packet>> packets);
     /* TODO: the node_id_ need to be placed right class like OuputStreamManager */
     size_t stream_index_ = 0;
     int node_id_;
@@ -57,7 +56,7 @@ class OutputStream {
     std::string alias_;
     std::vector<MirrorStream> mirror_streams_;
     // Cache for multi ISM
-    std::shared_ptr<SafeQueue<Packet>> queue_;
+    // std::shared_ptr<SafeQueue<Packet>> queue_;
 };
 END_BMF_ENGINE_NS
 

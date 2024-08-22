@@ -144,7 +144,7 @@ void InputStreamManager::add_packets(
         }
     }
 }
-/* Data Assembly(Debugging) */
+/* Data Assembly(verified) */
 void InputStreamManager::add_packets(
     int stream_id, std::shared_ptr<SafeQueue<Packet>> packets, 
     int upstream_node_id) {

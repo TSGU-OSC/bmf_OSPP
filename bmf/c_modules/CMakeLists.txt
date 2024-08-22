@@ -110,6 +110,16 @@ set_soname(pass_through)
 mac_update(pass_through)
 module_install(pass_through)
 
+# assemble module
+set(ASSEMBLE_HDRS include/assemble_module.h)
+set(ASSEMBLE_SRCS src/assemble_module.cpp)
+add_library(assemble SHARED ${ASSEMBLE_HDRS} ${ASSEMBLE_SRCS})
+target_include_directories(assemble PUBLIC include)
+target_link_libraries(assemble PRIVATE bmf_module_sdk)
+set_soname(assemble)
+mac_update(assemble)
+module_install(assemble)
+
 # clock module
 set(CLOCK_MODULE_HDRS include/clock_module.h include/fraction.hpp)
 set(CLOCK_MODULE_SRCS src/clock_module.cpp)

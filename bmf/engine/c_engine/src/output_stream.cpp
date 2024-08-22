@@ -28,9 +28,7 @@ MirrorStream::MirrorStream(
 OutputStream::OutputStream(int stream_id, std::string const &identifier,
                            std::string const &alias, std::string const &notify)
     : stream_id_(stream_id), identifier_(identifier), alias_(alias),
-      notify_(notify), queue_(std::make_shared<SafeQueue<Packet>>()) {
-        queue_->set_identifier(identifier_);
-      }
+      notify_(notify) {}
 
 int OutputStream::add_mirror_stream(
     std::shared_ptr<InputStreamManager> input_stream_manager, int stream_id) {
@@ -97,18 +95,9 @@ int OutputStream::propagate_packets(
 
 int OutputStream::split_packets(std::shared_ptr<SafeQueue<Packet>> packets) {
     /* Data Splitting(verified) */
-    while (!queue_->empty()) {
+    while (!packets->empty()) {
         Packet pkt;
-        if (queue_->pop(pkt)) {
-            /* TODO this variable need to be stored in stack */
-            //static size_t stream_index = 0; // To keep track of the current stream in mirror_streams_
-            if(node_id_ == 4) {
-                static int tem_count = 0;
-                std::cout << "OutputStream node_id: " << node_id_
-                                << "\tpkt's timestamp:" << pkt.timestamp()
-                                << "\tcount:" << ++tem_count
-                                << std::endl;
-            }
+        if (packets->pop(pkt)) {
             auto &s = mirror_streams_[stream_index_];
             auto copy_queue = std::make_shared<SafeQueue<Packet>>();
             copy_queue->push(pkt);
@@ -118,11 +107,10 @@ int OutputStream::split_packets(std::shared_ptr<SafeQueue<Packet>> packets) {
             //                  << "\tmirror_streams' size: " << mirror_streams_.size()
             //                  << "\tCount :" << ++cnt;
             /* original code for single node push pkts to input stream */
-            // s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
-            /* code for multi node output(do not use it for now) */
-            s.input_stream_manager_->add_packets(s.stream_id_, copy_queue, node_id_);
+            s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
+            /* code for multi node output(verified) */
+            // s.input_stream_manager_->add_packets(s.stream_id_, copy_queue, node_id_);
             
-            // std::cout << ++cnt << std::endl;
             stream_index_ = (stream_index_ + 1) % mirror_streams_.size();
         }
     }
@@ -137,32 +125,4 @@ int OutputStream::add_upstream_nodes(int node_id) {
     return 0;
 }
 
-int OutputStream::add_packets(std::shared_ptr<SafeQueue<Packet>> packets){
-    Packet pkt;
-    while (packets->pop(pkt)) {
-        queue_->push(pkt);
-        // std::cout << "output stream's address:" << this << "\tqueue's address:" << &queue_ << "\tpkt timestamp: " << pkt.timestamp() << std::endl;
-        // advance time bounding
-        // next_time_bounding_ = pkt.timestamp() + 1;
-        // if received EOS, set stream done
-        // here we can't use pkt.get_timestamp() + 1 since
-        // Timestamp.DONE = Timestamp.EOS + 2
-        if (pkt.timestamp() == EOS or pkt.timestamp() == BMF_EOF) {
-            /* add EOF pkt for multi downstream node */
-            for (size_t i = 1; i < mirror_streams_.size(); i++) {
-                queue_->push(Packet::generate_eof_packet());
-            }
-            // next_time_bounding_ = DONE;
-            // BMFLOG_NODE(BMF_INFO, node_id_) << "eof received";
-            // add node to scheduler thread until this EOS is processed
-            // graph_output_stream may not have attribute node
-            // if (node_id_ >= 0) {
-            //    throttled_cb_(node_id_, true);
-            //}
-        }
-        // wake up event
-        // fill_packet_event_.notify_all();
-    }
-    return 0;
-}
 END_BMF_ENGINE_NS

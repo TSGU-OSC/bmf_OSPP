@@ -204,5 +204,32 @@ class SplitOutputManager : public OutputStreamManager {
 
 #### 规划
 
-1. 数据聚合加入interl node机制，在garph层自动连接上下流节点
+1. 数据聚合加入internal node机制，在garph层自动连接上下流节点
 2. SplitOSM完善
+
+### 8.22进展
+
+#### 已完成
+- internal node: assemble_module实现数据聚合
+- OSM子类`SplitOutputStreamManager`的相关实现和初始化接口
+
+#### 1. 讨论interl node的存在形式
+
+1. assemble_module加入libbuiltin_module.so
+2. assemble_module单独存在一个库放入bmf/lib，但要实现和decoder一样的原生调用能力
+
+#### 2. 讨论grpah_config在何处修改
+两种方案
+
+1. 在builder层接受到应用层参数，自动修改graph_config（主要是OSM的mode设置和interl node的正确连接）
+2. builder层不做大量修改，在graph层init node之前先遍历graph_config，如果检测到有单模块多节点（可以从应用层传进来一个threads参数），那么就先修改graph_config至正确的参数，再进行init
+
+第一种方案主要修改builder层，那么python也要对应更改，第二种方案基本只需要修改engine层，对多语言特性支持更好。
+
+#### 结论：
+
+1. internal node设计成一个engine的类 内部直接new 新增一种创建node的链路
+2. engine层调整graph_config 利用optimizer
+
+
+

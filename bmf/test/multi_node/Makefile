@@ -4,9 +4,9 @@ CXXFLAGS = -std=c++17 -g -O0 -fPIC
 INCLUDES = -I/root/workspace/bmf_OSPP/output/bmf/include \
            -I.
 LDFLAGS = -L/root/workspace/bmf_OSPP/output/bmf/lib 
-LIBS = -lengine -lbmf_module_sdk -lhmp -lpthread 
+LIBS = -lengine -lbmf_module_sdk -lhmp -lpthread
 
-# Source files
+# Source filesg
 LIB_SRCS_COPY = copy_module.cpp
 LIB_SRCS_ASSEMBLE = assemble_module.cpp
 MAIN_SRCS = cpp_demo.cpp

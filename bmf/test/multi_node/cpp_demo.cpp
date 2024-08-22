@@ -37,18 +37,11 @@ void task() {
         );
     }
 
-    // video_copied.push_back(
-    //     graph.Module({video_copied[0], video_copied[1], video_copied[2]}, 
-    //                 "pass_through", bmf::builder::CPP,
-    //                 bmf_sdk::JsonParam(), "PassThroughModule",
-    //                 "/root/workspace/bmf_OSPP/output/bmf/cpp_modules/Module_pass_through/libpass_through.so", "pass_through:PassThroughModule",
-    //                 bmf::builder::Immediate, scheduler_cnt++)
-    // );
     video_copied.push_back(
         graph.Module({video_copied[0], video_copied[1], video_copied[2]}, 
                     "assemble_module", bmf::builder::CPP,
                     bmf_sdk::JsonParam(), "AssembleModule",
-                    "./libassemble_module.so", "assemble_module:AssembleModule",
+                    "/root/workspace/bmf_OSPP/output/bmf/cpp_modules/Module_assemble/libassemble.so", "assemble_module:AssembleModule",
                     bmf::builder::Immediate, scheduler_cnt++)
     );
 
