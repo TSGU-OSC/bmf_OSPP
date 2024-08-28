@@ -6,7 +6,7 @@ INCLUDES = -I/root/workspace/bmf_OSPP/output/bmf/include \
 LDFLAGS = -L/root/workspace/bmf_OSPP/output/bmf/lib 
 LIBS = -lengine -lbmf_module_sdk -lhmp -lpthread
 
-# Source filesg
+# Source files
 LIB_SRCS_COPY = copy_module.cpp
 LIB_SRCS_ASSEMBLE = assemble_module.cpp
 MAIN_SRCS = cpp_demo.cpp

@@ -69,6 +69,8 @@ class StreamConfig {
 
     std::string get_alias();
 
+    void set_identifier(std::string i);
+
     std::string get_identifier();
 
     std::string get_notify();
@@ -129,6 +131,8 @@ class NodeConfig {
 
     NodeConfig(JsonParam &node_config);
 
+    // NodeConfig(NodeConfig &nodeConfig);
+
     ModuleConfig get_module_info();
 
     NodeMetaInfo get_node_meta();
@@ -145,13 +149,25 @@ class NodeConfig {
 
     void add_output_stream(StreamConfig output_stream);
 
+    void change_input_stream_identifier(size_t order = 0);
+
+    void change_output_stream_identifier(size_t order = 0);
+
     std::string get_input_manager();
 
+    void set_output_manager(std::string output_manager_type);
+
     std::string get_output_manager();
+
+    void set_id(int id);
 
     int get_id();
 
     int get_scheduler();
+
+    void set_thread(int thread);
+
+    int get_thread();
 
     std::string get_alias();
 
@@ -171,6 +187,7 @@ class NodeConfig {
     std::vector<StreamConfig> output_streams;
     JsonParam option;
     int scheduler;
+    int thread;
     std::string input_manager = "immediate";
     std::string output_manager = "default";
     std::string alias;

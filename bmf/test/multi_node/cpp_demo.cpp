@@ -16,6 +16,37 @@
 #include "builder.hpp"
 #include "nlohmann/json.hpp"
 
+void test_task() {
+    int scheduler_cnt = 0;
+    auto graph = bmf::builder::Graph(bmf::builder::NormalMode);
+
+    nlohmann::json decode_para = {
+        {"input_path", "../../files/big_bunny_10s_30fps.mp4"}};
+    auto video = graph.Decode(bmf_sdk::JsonParam(decode_para), "", scheduler_cnt++);
+
+    auto video_copied = 
+        graph.Module({video["video"]}, 
+                    "copy_module", bmf::builder::CPP,
+                    bmf_sdk::JsonParam(), "CopyModule",
+                    "./libcopy_module.so", "copy_module:CopyModule",
+                    bmf::builder::Immediate, scheduler_cnt++, 3);
+
+
+    nlohmann::json encode_para = {
+        {"output_path", "./rgb2video.mp4"},
+    };
+    graph.Module({video_copied},
+            "c_ffmpeg_encoder", bmf::builder::CPP,
+            bmf_sdk::JsonParam(encode_para), "",
+            "", "",
+            bmf::builder::Immediate, scheduler_cnt++);
+
+    nlohmann::json graph_para = {{"dump_graph", 1},
+                                 {"scheduler_count", scheduler_cnt}};
+    graph.SetOption(bmf_sdk::JsonParam(graph_para));
+    graph.Run();
+    // std::cout << graph.Dump() << std::endl;
+}
 
 void task() {
     size_t multi_nums = 3;
@@ -179,6 +210,7 @@ void mock_task() {
 }
 
 int main() {
-    task();
+    // task();
     // mock_task();
+    test_task();
 }

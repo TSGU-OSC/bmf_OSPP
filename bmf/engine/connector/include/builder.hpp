@@ -91,7 +91,7 @@ class RealStream : public std::enable_shared_from_this<RealStream> {
               std::vector<std::shared_ptr<RealStream>> inputStreams,
               std::string const &moduleName, ModuleType moduleType,
               std::string const &modulePath, std::string const &moduleEntry,
-              InputManagerType inputStreamManager, int scheduler);
+              InputManagerType inputStreamManager, int scheduler, int thread);
     std::string GetName();
 
   private:
@@ -115,7 +115,7 @@ class RealNode : public std::enable_shared_from_this<RealNode> {
              std::vector<std::shared_ptr<RealStream>> inputStreams,
              std::string const &moduleName, ModuleType mduleType,
              std::string const &modulePath, std::string const &moduleEntry,
-             InputManagerType inputStreamManager, int scheduler);
+             InputManagerType inputStreamManager, int scheduler, int thread);
 
     RealNode() = delete;
 
@@ -148,7 +148,7 @@ class RealNode : public std::enable_shared_from_this<RealNode> {
               std::vector<std::shared_ptr<RealStream>> inputStreams,
               std::string const &moduleName, ModuleType moduleType,
               std::string const &modulePath, std::string const &moduleEntry,
-              InputManagerType inputStreamManager, int scheduler);
+              InputManagerType inputStreamManager, int scheduler, int thread);
 
   private:
     friend bmf::builder::Graph;
@@ -193,6 +193,7 @@ class RealNode : public std::enable_shared_from_this<RealNode> {
     NodeMetaInfo metaInfo_;
     InputManagerType inputManager_;
     int scheduler_;
+    int thread_;
 
     std::map<std::string, std::shared_ptr<RealStream>> existedStreamNotify_;
 };
@@ -220,7 +221,7 @@ class RealGraph : public std::enable_shared_from_this<RealGraph> {
               const std::vector<std::shared_ptr<RealStream>> &inputStreams,
               std::string const &moduleName, ModuleType moduleType,
               std::string const &modulePath, std::string const &moduleEntry,
-              InputManagerType inputStreamManager, int scheduler);
+              InputManagerType inputStreamManager, int scheduler, int thread);
 
     std::shared_ptr<RealNode> GetAliasedNode(std::string const &alias);
 
@@ -300,25 +301,29 @@ class BMF_ENGINE_API Stream {
            ModuleType moduleType, const bmf_sdk::JsonParam &option,
            std::string const &alias = "", std::string const &modulePath = "",
            std::string const &moduleEntry = "",
-           InputManagerType inputStreamManager = Immediate, int scheduler = 0);
+           InputManagerType inputStreamManager = Immediate, int scheduler = 0,
+           int thread = 1);
 
     Node CppModule(
         const std::vector<Stream> &inStreams, std::string const &moduleName,
         const bmf_sdk::JsonParam &option, std::string const &alias = "",
         std::string const &modulePath = "", std::string const &moduleEntry = "",
-        InputManagerType inputStreamManager = Immediate, int scheduler = 0);
+        InputManagerType inputStreamManager = Immediate, int scheduler = 0,
+        int thread = 1);
 
     Node PythonModule(
         const std::vector<Stream> &inStreams, std::string const &moduleName,
         const bmf_sdk::JsonParam &option, std::string const &alias = "",
         std::string const &modulePath = "", std::string const &moduleEntry = "",
-        InputManagerType inputStreamManager = Immediate, int scheduler = 0);
+        InputManagerType inputStreamManager = Immediate, int scheduler = 0,
+        int thread = 1);
 
     Node GoModule(
         const std::vector<Stream> &inStreams, std::string const &moduleName,
         const bmf_sdk::JsonParam &option, std::string const &alias = "",
         std::string const &modulePath = "", std::string const &moduleEntry = "",
-        InputManagerType inputStreamManager = Immediate, int scheduler = 0);
+        InputManagerType inputStreamManager = Immediate, int scheduler = 0,
+        int thread = 1);
 
     Node Decode(const bmf_sdk::JsonParam &decodePara,
                              std::string const &alias = "");
@@ -403,7 +408,7 @@ class BMF_ENGINE_API Stream {
         const std::vector<Stream> &inputStreams, std::string const &moduleName,
         ModuleType moduleType, std::string const &modulePath,
         std::string const &moduleEntry, InputManagerType inputStreamManager,
-        int scheduler);
+        int scheduler, int thread);
 
     Node InternalFFMpegFilter(const std::vector<Stream> &inStreams,
                                            std::string const &filterName,
@@ -457,7 +462,8 @@ class BMF_ENGINE_API Node {
         std::string const &moduleName, ModuleType moduleType,
         const bmf_sdk::JsonParam &option, std::string const &alias = "",
         std::string const &modulePath = "", std::string const &moduleEntry = "",
-        InputManagerType inputStreamManager = Immediate, int scheduler = 0);
+        InputManagerType inputStreamManager = Immediate, int scheduler = 0,
+        int thread = 1);
 
     Node CppModule(const std::vector<class Stream> &inStreams,
                                 std::string const &moduleName,
@@ -466,14 +472,16 @@ class BMF_ENGINE_API Node {
                                 std::string const &modulePath = "",
                                 std::string const &moduleEntry = "",
                                 InputManagerType inputStreamManager = Immediate,
-                                int scheduler = 0);
+                                int scheduler = 0,
+                                int thread = 1);
 
     Node PythonModule(
         const std::vector<class Stream> &inStreams,
         std::string const &moduleName, const bmf_sdk::JsonParam &option,
         std::string const &alias = "", std::string const &modulePath = "",
         std::string const &moduleEntry = "",
-        InputManagerType inputStreamManager = Immediate, int scheduler = 0);
+        InputManagerType inputStreamManager = Immediate, int scheduler = 0,
+        int thread = 1);
 
     Node GoModule(const std::vector<class Stream> &inStreams,
                                std::string const &moduleName,
@@ -482,7 +490,8 @@ class BMF_ENGINE_API Node {
                                std::string const &modulePath = "",
                                std::string const &moduleEntry = "",
                                InputManagerType inputStreamManager = Immediate,
-                               int scheduler = 0);
+                               int scheduler = 0,
+                               int thread = 1);
 
     Node Decode(const bmf_sdk::JsonParam &decodePara,
                              std::string const &alias = "");
@@ -565,7 +574,7 @@ class BMF_ENGINE_API Node {
         const std::vector<class Stream> &inputStreams,
         std::string const &moduleName, ModuleType moduleType,
         std::string const &modulePath, std::string const &moduleEntry,
-        InputManagerType inputStreamManager, int scheduler);
+        InputManagerType inputStreamManager, int scheduler, int thread);
 
     Node InternalFFMpegFilter(
         const std::vector<class Stream> &inStreams,
@@ -644,25 +653,29 @@ class BMF_ENGINE_API Graph {
            ModuleType moduleType, const bmf_sdk::JsonParam &option,
            std::string const &alias = "", std::string const &modulePath = "",
            std::string const &moduleEntry = "",
-           InputManagerType inputStreamManager = Immediate, int scheduler = 0);
+           InputManagerType inputStreamManager = Immediate, int scheduler = 0,
+           int thread = 1);
 
     Node CppModule(
         const std::vector<Stream> &inStreams, std::string const &moduleName,
         const bmf_sdk::JsonParam &option, std::string const &alias = "",
         std::string const &modulePath = "", std::string const &moduleEntry = "",
-        InputManagerType inputStreamManager = Immediate, int scheduler = 0);
+        InputManagerType inputStreamManager = Immediate, int scheduler = 0,
+        int thread = 1);
 
     Node PythonModule(
         const std::vector<Stream> &inStreams, std::string const &moduleName,
         const bmf_sdk::JsonParam &option, std::string const &alias = "",
         std::string const &modulePath = "", std::string const &moduleEntry = "",
-        InputManagerType inputStreamManager = Immediate, int scheduler = 0);
+        InputManagerType inputStreamManager = Immediate, int scheduler = 0,
+        int thread = 1);
 
     Node GoModule(
         const std::vector<Stream> &inStreams, std::string const &moduleName,
         const bmf_sdk::JsonParam &option, std::string const &alias = "",
         std::string const &modulePath = "", std::string const &moduleEntry = "",
-        InputManagerType inputStreamManager = Immediate, int scheduler = 0);
+        InputManagerType inputStreamManager = Immediate, int scheduler = 0,
+        int thread = 1);
 
     Node Decode(const bmf_sdk::JsonParam &decodePara,
                              std::string const &alias = "",
@@ -805,7 +818,7 @@ class BMF_ENGINE_API Graph {
             const std::vector<Stream> &inputStreams,
             std::string const &moduleName, ModuleType moduleType,
             std::string const &modulePath, std::string const &moduleEntry,
-            InputManagerType inputStreamManager, int scheduler);
+            InputManagerType inputStreamManager, int scheduler, int thread);
     Node InternalFFMpegFilter(const std::vector<Stream> &inStreams,
                                            std::string const &filterName,
                                            const bmf_sdk::JsonParam &filterPara,

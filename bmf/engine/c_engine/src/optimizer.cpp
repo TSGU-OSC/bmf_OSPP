@@ -278,6 +278,37 @@ StreamConfig find_first_circle_node(std::vector<NodeConfig> opt_nodes,
     return stream;
 }
 
+void process_multi_thread(std::vector<NodeConfig> &nodes) {
+    NodeConfig *upstream_node = nullptr;
+    for (auto it = nodes.begin(); it != nodes.end(); ++it) {
+        NodeConfig &node = *it;
+        if (!(node.get_thread() > 1)) {
+            upstream_node = &node;
+        } else if (upstream_node) {
+            upstream_node->set_output_manager("split");
+            // Insert copies of the current node
+            for (int i = 0; i < node.get_thread() - 1; ++i) {
+                auto new_node = NodeConfig(node);
+                new_node.set_id(nodes.size() + i);
+                /* TODO:set scheduler for new node */
+                new_node.change_output_stream_identifier();
+                new_node.set_thread(1);
+                nodes.insert(it + 1, new_node);
+            }
+            node.set_thread(1);
+            upstream_node = nullptr;
+
+            // // Move iterator to point to the newly inserted last copy
+            // it += node.get_thread() - 1;
+
+            // // Insert a new node after the copied nodes
+            // NodeConfig assemble_node;
+            
+            // nodes.insert(it + 1, assemble_node);
+        }
+    }
+}
+
 void optimize(std::vector<NodeConfig> &nodes) {
     // nodes_done is used to record ffmpeg_filter node that already optimized
     std::vector<NodeConfig> nodes_done;

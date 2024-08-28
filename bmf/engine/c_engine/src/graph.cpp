@@ -199,7 +199,7 @@ int Graph::init_nodes() {
         return this->scheduler_->clear_task(node_id, scheduler_queue_id);
     };
     // init node
-    for (auto &node_config : graph_config_.get_nodes()) {
+    for (auto &node_config : graph_config_.get_nodes()) {       
         std::shared_ptr<Module> module_pre_allocated;
         auto node_id = node_config.get_id();
         if (pre_modules_.count(node_id) > 0)

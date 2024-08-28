@@ -38,7 +38,6 @@ int OutputStream::add_mirror_stream(
 
 int OutputStream::propagate_packets(
     std::shared_ptr<SafeQueue<Packet>> packets) {
-    static int cnt = 0;
     /* Do not Split */
     // while (!queue_->empty()) {
     //     Packet pkt;
@@ -53,43 +52,42 @@ int OutputStream::propagate_packets(
     //     }
     // }
     /* Data Splitting(verified) optimizing */
-    while (!packets->empty()) {
-        Packet pkt;
-        if (packets->pop(pkt)) {
-            /* TODO: this variable need to be stored in stack */
-            //static size_t stream_index = 0; // To keep track of the current stream in mirror_streams_
-            if(node_id_ == 4) {
-                static int tem_count = 0;
-                std::cout << "OutputStream node_id: " << node_id_
-                                << "\tpkt's timestamp:" << pkt.timestamp()
-                                << "\tcount:" << ++tem_count
-                                << std::endl;
-            }
-            auto &s = mirror_streams_[stream_index_];
-            auto copy_queue = std::make_shared<SafeQueue<Packet>>();
-            copy_queue->push(pkt);
-            copy_queue->set_identifier(identifier_);
-            // BMFLOG(BMF_INFO) << "Node id: " << node_id_
-            //                  << "\tStream_index: " << stream_index_ 
-            //                  << "\tmirror_streams' size: " << mirror_streams_.size()
-            //                  << "\tCount :" << ++cnt;
-            /* original code for single node push pkts to input stream */
-            s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
-            /* code for multi node output(verified) */
-            // s.input_stream_manager_->add_packets(s.stream_id_, copy_queue, node_id_);
+    // while (!packets->empty()) {
+    //     Packet pkt;
+    //     if (packets->pop(pkt)) {
+    //         /* TODO: this variable need to be stored in stack */
+    //         //static size_t stream_index = 0; // To keep track of the current stream in mirror_streams_
+    //         if(node_id_ == 4) {
+    //             static int tem_count = 0;
+    //             std::cout << "OutputStream node_id: " << node_id_
+    //                             << "\tpkt's timestamp:" << pkt.timestamp()
+    //                             << "\tcount:" << ++tem_count
+    //                             << std::endl;
+    //         }
+    //         auto &s = mirror_streams_[stream_index_];
+    //         auto copy_queue = std::make_shared<SafeQueue<Packet>>();
+    //         copy_queue->push(pkt);
+    //         copy_queue->set_identifier(identifier_);
+    //         // BMFLOG(BMF_INFO) << "Node id: " << node_id_
+    //         //                  << "\tStream_index: " << stream_index_ 
+    //         //                  << "\tmirror_streams' size: " << mirror_streams_.size()
+    //         //                  << "\tCount :" << ++cnt;
+    //         /* original code for single node push pkts to input stream */
+    //         s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
+    //         /* code for multi node output(verified) */
+    //         // s.input_stream_manager_->add_packets(s.stream_id_, copy_queue, node_id_);
             
-            // std::cout << ++cnt << std::endl;
-            stream_index_ = (stream_index_ + 1) % mirror_streams_.size();
-        }
-    }
+    //         // std::cout << ++cnt << std::endl;
+    //         stream_index_ = (stream_index_ + 1) % mirror_streams_.size();
+    //     }
+    // }
 
     /* original version */
-    // for (auto &s : mirror_streams_) {
-    //     auto copy_queue = std::make_shared<SafeQueue<Packet>>(*packets.get());
-    //     copy_queue->set_identifier(identifier_);
-    //     s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
-    //     std::cout << ++cnt << std::endl;
-    // }
+    for (auto &s : mirror_streams_) {
+        auto copy_queue = std::make_shared<SafeQueue<Packet>>(*packets.get());
+        copy_queue->set_identifier(identifier_);
+        s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
+    }
     return 0;
 }
 

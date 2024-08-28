@@ -1,0 +1,5 @@
+{
+    "name": "assemble_module",
+    "type": "c++",
+    "class": "AssembleModule"
+}
