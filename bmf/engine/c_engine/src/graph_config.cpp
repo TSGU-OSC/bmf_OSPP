@@ -213,10 +213,8 @@ JsonParam NodeConfig::get_option() { return option; }
 
 void NodeConfig::set_option(JsonParam node_option) { option = node_option; }
 
-void NodeConfig::change_input_stream_identifier(size_t order) {
-    auto buf = new char[255];
-    std::sprintf(buf, "%s_%d_%lu", get_module_info().get_module_name().c_str(), get_id(), order);
-    input_streams[order].set_identifier(buf);
+void NodeConfig::change_input_stream_identifier(std::string identifier) {
+    input_streams[0].set_identifier(identifier);
 }
 
 void NodeConfig::change_output_stream_identifier(size_t order) {

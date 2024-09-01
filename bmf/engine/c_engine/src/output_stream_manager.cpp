@@ -185,6 +185,7 @@ int SplitOutputStreamManager::post_process(Task &task) {
     for (auto &t : task.outputs_queue_) {
         auto q = std::make_shared<SafeQueue<Packet>>(t.second);
         /* split packets to multi downstream node */
+        output_streams_[t.first]->add_packets(q);
         output_streams_[t.first]->split_packets(q);
     }
     return 0;

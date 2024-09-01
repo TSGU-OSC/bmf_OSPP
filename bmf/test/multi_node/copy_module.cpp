@@ -44,6 +44,8 @@ int CopyModule::process(Task &task) {
 
             task.fill_output_packet(label, output_pkt);
 
+            // std::cout << "node: copy module " << node_id_ << "pkt's timestamp: " << output_pkt.timestamp() << std::endl;
+
         }
 
     }

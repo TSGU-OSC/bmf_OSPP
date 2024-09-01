@@ -17,6 +17,7 @@
 
 #include <bmf/sdk/module.h>
 #include <bmf/sdk/module_registry.h>
+#include "/root/workspace/bmf_OSPP/bmf/engine/c_engine/include/safe_queue.h"
 USE_BMF_SDK_NS
 class AssembleModule : public Module {
   public:
@@ -35,6 +36,8 @@ class AssembleModule : public Module {
     int last_output_num_;
 
     int queue_index_;
+
+    std::map<int, std::shared_ptr<bmf_engine::SafeQueue<Packet>>> queue_map_;
 };
 
 REGISTER_MODULE_CLASS(AssembleModule)

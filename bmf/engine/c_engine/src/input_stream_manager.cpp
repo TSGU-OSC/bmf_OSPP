@@ -41,6 +41,13 @@ InputStreamManager::InputStreamManager(int node_id,
         input_streams_[i] = std::make_shared<InputStream>(
             i, input_streams[i], node_id, empt, max_queue_size);
         stream_id_list_.push_back(i);
+
+        /* init tem_queue_ */
+        std::shared_ptr<SafeQueue<Packet>> tmp_queue = 
+            std::make_shared<SafeQueue<Packet>>();
+        tem_queue_.insert(
+            std::pair<int, std::shared_ptr<SafeQueue<Packet>>>(
+                i, tmp_queue));
     }
     max_id_ = input_streams.size() - 1;
 }
@@ -160,7 +167,7 @@ void InputStreamManager::add_packets(
     if (input_streams_.count(stream_id) > 0) {
         // bool is_empty = input_streams_[stream_id]->is_empty();
         /* tem store pkts for sorting */
-        auto it = tem_queue_.find(upstream_node_id);
+        auto it = tem_queue_.find(stream_id);
         if(it == tem_queue_.end()) {
             BMFLOG(BMF_ERROR) << "Coundn't find right upstream to add pkts";
             return;
@@ -169,24 +176,26 @@ void InputStreamManager::add_packets(
         static size_t push_count = 0;
         while (packets->pop(pkt)) {
             it->second->push(pkt);
-            // if(upstream_node_id == 4) {
-            //     std::cout << "upstream_node_id: " << upstream_node_id
-            //                     << "\tstorage: " << it->second->size()
-            //                     // << "\tpush count:" << ++push_count_[it->first]    
-            //                     << "\tpush count totally: " << ++push_count
-            //                     << "\tpkt's timestamp:" << pkt.timestamp()
-            //                     << std::endl;
-            // }
+            if(upstream_node_id != 4 && upstream_node_id != 0) {
+                std::cout << "upstream_node_id: " << upstream_node_id
+                                << "\tstorage: " << it->second->size()
+                                // << "\tpush count:" << ++push_count_[it->first]    
+                                << "\tpush count totally: " << ++push_count
+                                << "\tpkt's timestamp:" << pkt.timestamp()
+                                << std::endl;
+            }
             
         }
 
         //if(is_tem_queue_all_filled()) {
             // input_streams_[stream_id]->add_packets(packets);
             /* cache all pkts into first stream */
-            while(!tem_queue_[queue_index_ + first_upstream_node_id_]->empty() && stream_id == stream_id_list_.front()) {
+            // while(!tem_queue_[queue_index_]->empty() && stream_id == stream_id_list_.front()) {
+            /* push data into different stream */
+            while(!tem_queue_[queue_index_]->empty()) {
                 // Packet tem_pkt;
                 
-                auto queue = tem_queue_.find(queue_index_ + first_upstream_node_id_);
+                auto queue = tem_queue_.find(queue_index_);
                 static size_t pop_count = 0;
                 /* avoid multi OS execute this code at same time */
                 // std::lock_guard<std::mutex> guard(add_pkts_mutex_);
@@ -195,7 +204,7 @@ void InputStreamManager::add_packets(
                     // if(pkt.timestamp() == BMF_EOF) input_block_ = true;
                     auto copy_queue = std::make_shared<SafeQueue<Packet>>();
                     copy_queue->push(pkt);
-                    input_streams_[stream_id]->add_packets(copy_queue);
+                    input_streams_[queue_index_]->add_packets(copy_queue);
                     /* remove useless input stream but first input stream */
                     // if(pkt.timestamp() == BMF_EOF) {
                     //     int streams_cnt = stream_id_list_.size();
@@ -244,11 +253,11 @@ Packet InputStreamManager::pop_next_packet(int stream_id, bool block) {
 int InputStreamManager::add_upstream_nodes(int node_id) {
     upstream_nodes_.insert(node_id);
 
-    std::shared_ptr<SafeQueue<Packet>> tmp_queue =
-        std::make_shared<SafeQueue<Packet>>();
-    tem_queue_.insert(
-        std::pair<int, std::shared_ptr<SafeQueue<Packet>>>(
-            node_id, tmp_queue));
+    // std::shared_ptr<SafeQueue<Packet>> tmp_queue =
+    //     std::make_shared<SafeQueue<Packet>>();
+    // tem_queue_.insert(
+    //     std::pair<int, std::shared_ptr<SafeQueue<Packet>>>(
+    //         node_id, tmp_queue));
     /* init the queue index is first node id */
     first_upstream_node_id_ = tem_queue_.begin()->first;
     return 0;

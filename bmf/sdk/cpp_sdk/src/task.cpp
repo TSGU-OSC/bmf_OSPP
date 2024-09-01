@@ -83,7 +83,7 @@ bool Task::fill_input_packet(int stream_id, Packet packet) {
     // if(stream_id == 0 && node_id_ == 2) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill input packet success!"<< ++count_id_2 <<"\n";
     // if(stream_id == 0 && node_id_ == 3) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill input packet success!"<< ++count_id_3 <<"\n";
     static int count_id_3 = 0;
-    if(node_id_ == 4) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id << "pkt's timestamp:" << packet.timestamp() <<"fill input packet success!"<< ++count_id_3 <<"\n";
+    // if(node_id_ == 4) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id << "pkt's timestamp:" << packet.timestamp() <<"fill input packet success!"<< ++count_id_3 <<"\n";
     return true;
 }
 
@@ -98,7 +98,7 @@ bool Task::fill_output_packet(int stream_id, Packet packet) {
     // if(stream_id == 0 && node_id_ == 2) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill output packet success!"<< ++count_id_2 <<"\n";
     // if(stream_id == 0 && node_id_ == 3) std::cout<<"node: "<<node_id_<<"stream: "<< stream_id <<"fill output packet success!"<< ++count_id_3 <<"\n";
     static int count_id = 0;
-    if(node_id_ == 4) std::cout<<"node: "<<node_id_<<"\tstream: "<< stream_id << "\tpkt's timestamp:" << packet.timestamp() <<"\tfill output packet success!"<< ++count_id <<"\n";
+    // if(node_id_ == 4) std::cout<<"node: "<<node_id_<<"\tstream: "<< stream_id << "\tpkt's timestamp:" << packet.timestamp() <<"\tfill output packet success!"<< ++count_id <<"\n";
     return true;
 }
 

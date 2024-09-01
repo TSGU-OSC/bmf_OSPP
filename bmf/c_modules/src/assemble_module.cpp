@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  */
 
-#include "assemble_module.h"
+#include "../include/assemble_module.h"
 #include <bmf/sdk/log.h>
 
 AssembleModule::AssembleModule(int node_id, JsonParam json_param)
@@ -30,6 +30,14 @@ int AssembleModule::process(Task &task) {
             << "Input Queue size changed from " << last_input_num_ << " to "
             << task.get_inputs().size();
         last_input_num_ = task.get_inputs().size();
+        /* init queue_map_ */
+        for (int i = 0; i < last_input_num_; i++) {
+            std::shared_ptr<bmf_engine::SafeQueue<Packet>> tmp_queue = 
+                std::make_shared<bmf_engine::SafeQueue<Packet>>();
+            queue_map_.insert(
+                std::pair<int, std::shared_ptr<bmf_engine::SafeQueue<Packet>>>(
+                    i, tmp_queue));
+        }
     }
     if (task.get_outputs().size() != last_output_num_) {
         BMFLOG_NODE(BMF_INFO, node_id_)
@@ -45,15 +53,26 @@ int AssembleModule::process(Task &task) {
     }
     /* assemble data from multi input queue */
     auto tem_queue = task.get_inputs();
-
-    while (!tem_queue[queue_index_]->empty()) {
+    /* cache pkts into queue_map_ */
+    for (size_t i = 0; i < tem_queue.size(); i++) {
+        while (!tem_queue[i]->empty()) {
+            auto q = tem_queue[i];
+            Packet pkt = q->front();
+            q->pop();
+            queue_map_[i]->push(pkt);
+        }
+    }
+    
+    while (!queue_map_[queue_index_]->empty()) {
+        /* pass through pkts */
         Packet packet;
-        auto queue = tem_queue.find(queue_index_);
+        auto queue = queue_map_.find(queue_index_);
         
         if (in_eof_[queue_index_] == true)
             continue;
         
-        if(task.pop_packet_from_input_queue(queue_index_, packet)) {
+        // if(task.pop_packet_from_input_queue(queue_index_, packet)) {
+        if (queue->second->pop(packet)) {
             task.fill_output_packet(0, packet);
             if (packet.timestamp() == BMF_EOF) {
                 in_eof_[queue_index_] = true;
@@ -62,18 +81,9 @@ int AssembleModule::process(Task &task) {
                 << "get packet :" << packet.timestamp()
                 << " data:" << packet.type_info().name
                 << " in queue:" << queue_index_;
-        }
 
-        // while (task.pop_packet_from_input_queue(queue_index_, packet)) {
-        //     task.fill_output_packet(queue_index_, packet);
-        //     if (packet.timestamp() == BMF_EOF) {
-        //         in_eof_[queue_index_] = true;
-        //     }
-        //     BMFLOG_NODE(BMF_INFO, node_id_)
-        //         << "get packet :" << packet.timestamp()
-        //         << " data:" << packet.type_info().name
-        //         << " in queue:" << queue_index_;
-        // }
+            queue_index_ = (queue_index_ + 1) % queue_map_.size();
+        }
     }
 
     bool all_eof = true;

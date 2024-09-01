@@ -149,7 +149,7 @@ class NodeConfig {
 
     void add_output_stream(StreamConfig output_stream);
 
-    void change_input_stream_identifier(size_t order = 0);
+    void change_input_stream_identifier(std::string identifier);
 
     void change_output_stream_identifier(size_t order = 0);
 
