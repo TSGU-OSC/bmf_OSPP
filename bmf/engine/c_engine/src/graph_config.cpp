@@ -39,6 +39,12 @@ StreamConfig::StreamConfig(nlohmann::json &stream_config) {
     init(stream_config);
 }
 
+StreamConfig::StreamConfig(const StreamConfig &other)
+    : identifier(other.identifier),
+      alias(other.alias),
+      notify(other.notify) {
+}
+
 void StreamConfig::init(nlohmann::json &stream_config) {
     identifier = stream_config.at("identifier").get<std::string>();
     auto p = identifier.find(':');
@@ -76,6 +82,13 @@ ModuleConfig::ModuleConfig(nlohmann::json &module_config) {
     init(module_config);
 }
 
+ModuleConfig::ModuleConfig(const ModuleConfig &other)
+    : module_name(other.module_name),
+      module_type(other.module_type),
+      module_path(other.module_path),
+      module_entry(other.module_entry) {
+}
+
 void ModuleConfig::init(nlohmann::json &module_config) {
     if (module_config.count("name"))
         module_name = module_config.at("name").get<std::string>();
@@ -109,6 +122,13 @@ NodeMetaInfo::NodeMetaInfo(JsonParam &node_meta) {
 }
 
 NodeMetaInfo::NodeMetaInfo(nlohmann::json &node_meta) { init(node_meta); }
+
+NodeMetaInfo::NodeMetaInfo(const NodeMetaInfo &other)
+    : premodule_id(other.premodule_id),
+      bundle(other.bundle),
+      queue_size_limit(other.queue_size_limit),
+      callback_binding(other.callback_binding){
+}
 
 void NodeMetaInfo::init(nlohmann::json &node_meta) {
     if (node_meta.count("bundle_id"))
@@ -156,19 +176,41 @@ NodeConfig::NodeConfig(JsonParam &node_config) {
 
 NodeConfig::NodeConfig(nlohmann::json &node_config) { init(node_config); }
 
-// NodeConfig::NodeConfig(NodeConfig &nodeConfig) {
-//     id = nodeConfig.get_id();
-//     module = nodeConfig.get_module_info();
-//     meta = nodeConfig.get_node_meta();
-//     input_streams = nodeConfig.get_input_streams();
-//     output_streams = nodeConfig.get_output_streams();
-//     option = nodeConfig.get_option();
-//     scheduler = nodeConfig.get_scheduler();
-//     thread = nodeConfig.get_scheduler();
-//     input_manager = nodeConfig.get_input_manager();
-//     output_manager = nodeConfig.get_output_manager();
-//     alias = nodeConfig.get_alias();
-//     action = nodeConfig.get_action();
+NodeConfig::NodeConfig(const NodeConfig &other)
+    : id(other.id),
+      module(other.module),  // Assuming ModuleConfig has a copy constructor
+      meta(other.meta),      // Assuming NodeMetaInfo has a copy constructor
+      // input_streams(other.input_streams),  // Deep copy of vector
+      // output_streams(other.output_streams),  // Deep copy of vector
+      option(other.option),  // Assuming JsonParam has a copy constructor
+      scheduler(other.scheduler),
+      thread(other.thread),
+      input_manager(other.input_manager),
+      output_manager(other.output_manager),
+      alias(other.alias),
+      action(other.action) {
+    // Any additional deep copying logic, if necessary, can be added here.
+    for(auto input_stream : other.input_streams) 
+        add_input_stream(input_stream);
+    for (auto output_stream : other.output_streams)
+        add_output_stream(output_stream);
+}
+
+// // Move constructor
+// NodeConfig::NodeConfig(NodeConfig &&other) noexcept
+//     : id(std::move(other.id)),
+//       module(std::move(other.module)),
+//       meta(std::move(other.meta)),
+//       input_streams(std::move(other.input_streams)),  // Move the vectors
+//       output_streams(std::move(other.output_streams)),
+//       option(std::move(other.option)),
+//       scheduler(std::move(other.scheduler)),
+//       thread(std::move(other.thread)),
+//       input_manager(std::move(other.input_manager)),
+//       output_manager(std::move(other.output_manager)),
+//       alias(std::move(other.alias)),
+//       action(std::move(other.action)) {
+//     std::cout << "NodeConfig moved: input_streams size = " << input_streams.size() << std::endl;
 // }
 
 std::string NodeConfig::get_alias() { return alias; }
@@ -195,8 +237,10 @@ void NodeConfig::init(nlohmann::json &node_config) {
         option = JsonParam(node_config.at("option"));
     if (node_config.count("scheduler"))
         scheduler = node_config.at("scheduler").get<int>();
-    if (node_config.count("thread"))
-        thread = node_config.at("thread").get<int>();
+    // if (node_config.count("thread"))
+    //     thread = node_config.at("thread").get<int>();
+    if (option.json_value_.count("thread"))
+        thread = option.json_value_.at("thread").get<int>();
     if (node_config.count("input_manager"))
         input_manager = node_config.at("input_manager").get<std::string>();
     if (node_config.count("output_manager"))
@@ -253,6 +297,8 @@ void NodeConfig::set_id(int id) { this->id = id; }
 
 int NodeConfig::get_id() { return id; }
 
+void NodeConfig::set_scheduler(int scheduler) { this->scheduler = scheduler; }
+
 int NodeConfig::get_scheduler() { return scheduler; }
 
 void NodeConfig::set_thread(int thread) { this->thread = thread; }
@@ -263,7 +309,7 @@ nlohmann::json NodeConfig::to_json() {
     nlohmann::json json_node_config;
     json_node_config["id"] = id;
     json_node_config["scheduler"] = scheduler;
-    json_node_config["thread"] = thread;
+    // json_node_config["thread"] = thread;
     json_node_config["input_manager"] = input_manager;
     json_node_config["output_manager"] = output_manager;
     json_node_config["module_info"] = module.to_json();

@@ -56,7 +56,10 @@ BMFGraph::BMFGraph(const std::string &graph_config, bool is_path,
 
     // find subgraph and merge into while graph
     bmf_engine::Optimizer::subgraph_preprocess(g_config, created_modules);
-
+    
+    /* set upstream node's OSM and add assemble node if current node set multi thread */
+    bmf_engine::Optimizer::process_multi_thread(g_config);
+    
     // catch graph config at this time for further comparison.
     auto ori_g_config = g_config;
 
@@ -73,9 +76,6 @@ BMFGraph::BMFGraph(const std::string &graph_config, bool is_path,
 
     // replace stream name with stream id in filter option
     bmf_engine::Optimizer::replace_stream_name_for_graph(g_config.nodes);
-
-    /* set upstream node's OSM and add assemble node if current node set multi thread */
-    bmf_engine::Optimizer::process_multi_thread(g_config.nodes);
 
     // dump merged graph
     bmf_engine::Optimizer::dump_graph(g_config, true);

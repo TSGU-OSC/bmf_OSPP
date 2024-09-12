@@ -320,26 +320,29 @@ NodeConfig create_assemble_node(int id, std::vector<StreamConfig> input_streams,
     return NodeConfig(info);
 } 
 
-void process_multi_thread(std::vector<NodeConfig> &nodes) {
+void process_multi_thread(GraphConfig &graph_config) {
+    auto &nodes = graph_config.nodes;
+    const auto json = graph_config.get_option().json_value_;
     NodeConfig *upstream_node = nullptr;
     int nodes_index = 0;
     while ((nodes.begin() + nodes_index) != nodes.end()) {
         auto it = nodes.begin() + nodes_index;
-        NodeConfig &node = *it;
-        if (!(node.get_thread() > 1)) {
-            upstream_node = &node;
+        NodeConfig *node = &nodes[nodes_index];
+        if (!(node->get_thread() > 1)) {
+            upstream_node = node;
         } else if (upstream_node) {
             upstream_node->set_output_manager("split");
             upstream_node = nullptr;
-            int threads = node.get_thread();
-            
-
+            int threads = node->get_thread();
+                
             std::vector<StreamConfig> input_streams;
-            input_streams.push_back(node.output_streams[0]);
+            input_streams.push_back(node->output_streams[0]);
 
             // Insert copies of the current node
             for (int i = 1; i < threads; ++i) {
-                auto new_node = NodeConfig(node);
+                /* aviod value of node point changed */
+                node = &nodes[nodes_index];
+                auto new_node = NodeConfig(*node);
                 /* set node id after end node */
                 new_node.set_id((nodes.end()-1)->get_id() + i);
                 /* set node id after current ndoe */
@@ -347,21 +350,28 @@ void process_multi_thread(std::vector<NodeConfig> &nodes) {
                 /* TODO:set scheduler for new node */
                 new_node.change_output_stream_identifier();
                 new_node.set_thread(1);
+                new_node.set_scheduler(new_node.get_id());
+                /* increase scheduler count to avoid conflict */
+                // int scheduler_count = json.at("scheduler_count").get<int>();
+                // nlohmann::json new_json = {{"scheduler_count", ++scheduler_count}};
+                // auto &scheduler = json.at("scheduler_count");
+                // scheduler.update(new_json);
+                // graph_config.get_option().json_value_.at("/scheduler_count"_json_pointer) = ++scheduler_count;
+
                 input_streams.push_back(new_node.output_streams[0]);
-                nodes.insert(it + i, new_node);
+                nodes.insert(nodes.begin() + nodes_index + i, new_node);
             }
 
             // Insert a new node after the copied nodes
-            auto assemble_node = create_assemble_node(nodes.size(), input_streams, nodes.begin()->get_scheduler(), 1);
-
-            // Move iterator to point to the newly inserted last copy
-            it = nodes.begin() + nodes_index + node.get_thread() - 1;
+            auto assemble_node = create_assemble_node(nodes.size(), input_streams, nodes.size(), 1);
+            nodes.insert(nodes.begin() + nodes_index + threads, assemble_node);
             
-            nodes.insert(it + 1, assemble_node);
-
-            (it + 2)->change_input_stream_identifier((assemble_node.get_output_streams())[0].get_identifier());
+            // change downstream node's inputstream to assemble node's outputstream
+            (nodes.begin() + nodes_index + threads + 1)->change_input_stream_identifier((assemble_node.get_output_streams())[0].get_identifier());
             
-            node.set_thread(1);
+            node->set_thread(1);
+
+            nodes_index += threads;
             /* avoid iterator point bug */
             return;
         }

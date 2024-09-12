@@ -18,32 +18,32 @@
 
 void test_task() {
     int scheduler_cnt = 0;
+    int multi_nums = 10;
     auto graph = bmf::builder::Graph(bmf::builder::NormalMode);
-
+    /* decoder init */
     nlohmann::json decode_para = {
-        {"input_path", "../../files/big_bunny_10s_30fps.mp4"}};
+        {"input_path", "../../files/big_bunny_10s_30fps.mp4"}
+    };
     auto video = graph.Decode(bmf_sdk::JsonParam(decode_para), "", scheduler_cnt++);
-
+    /* distributed ndoe init */
+    nlohmann::json node_para = {
+        {"thread", multi_nums}
+    };
     auto video_copied = 
         graph.Module({video["video"]}, 
                     "copy_module", bmf::builder::CPP,
-                    bmf_sdk::JsonParam(), "CopyModule",
+                    bmf_sdk::JsonParam(node_para), "CopyModule",
                     "./libcopy_module.so", "copy_module:CopyModule",
-                    bmf::builder::Immediate, scheduler_cnt++, 3);
+                    bmf::builder::Immediate, scheduler_cnt++);
 
-
+    /* encoder init */
     nlohmann::json encode_para = {
         {"output_path", "./rgb2video.mp4"},
     };
     graph.Encode(video_copied, video["audio"], bmf_sdk::JsonParam(encode_para), "", scheduler_cnt++);
-    // graph.Module({video_copied},
-    //         "c_ffmpeg_encoder", bmf::builder::CPP,
-    //         bmf_sdk::JsonParam(encode_para), "",
-    //         "", "",
-    //         bmf::builder::Immediate, scheduler_cnt++);
 
     nlohmann::json graph_para = {{"dump_graph", 1},
-                                 {"scheduler_count", scheduler_cnt}};
+                                 {"scheduler_count", scheduler_cnt + multi_nums}};
     graph.SetOption(bmf_sdk::JsonParam(graph_para));
     graph.Run();
     // std::cout << graph.Dump() << std::endl;
