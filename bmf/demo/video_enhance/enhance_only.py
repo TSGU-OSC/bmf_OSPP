@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-input_file = "inputs/example_320_180.mp4"
+input_file = "inputs/example_960_540.mp4"
 output_file = "output.mp4"
 output_compose_file = "output_compose.mp4"
 
@@ -12,8 +12,9 @@ def run():
     graph = bmf.graph()
     video = graph.decode({
         "input_path": input_file,
-        "loglevel": "debug",
-    })
+        # "loglevel": "debug",
+        },
+    )
 
     enhance = bmf.module(
         [video["video"]],
@@ -21,21 +22,11 @@ def run():
         option={
             "fp32": True,
             "output_scale": 2,
+            "thread": 3,
         },
         entry="enhance_module.EnhanceModule",
         input_manager="immediate",
     )
-
-    # enhance = bmf.module(
-    #     [video["video"]],
-    #     "EnhanceModule",
-    #     option={
-    #         "fp32": True,
-    #         "output_scale": 2,
-    #     },
-    #     entry="enhance_module.EnhanceModule",
-    #     input_manager="immediate",
-    # )
 
     bmf.encode(
         enhance[0],
@@ -52,11 +43,11 @@ def run():
                 "sample_rate": 44100,
                 "codec": "aac"
             },
-            "loglevel": "debug",
+            # "loglevel": "debug",
             "output_path": output_file,
         },
     )
-
+    graph.set_option({"dump_graph": 1})
     graph.run()
 
 

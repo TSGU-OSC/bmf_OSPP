@@ -18,7 +18,7 @@
 
 void test_task() {
     int scheduler_cnt = 0;
-    int multi_nums = 10;
+    int multi_nums = 3;
     auto graph = bmf::builder::Graph(bmf::builder::NormalMode);
     /* decoder init */
     nlohmann::json decode_para = {
@@ -42,8 +42,7 @@ void test_task() {
     };
     graph.Encode(video_copied, video["audio"], bmf_sdk::JsonParam(encode_para), "", scheduler_cnt++);
 
-    nlohmann::json graph_para = {{"dump_graph", 1},
-                                 {"scheduler_count", scheduler_cnt + multi_nums}};
+    nlohmann::json graph_para = {{"dump_graph", 1}};
     graph.SetOption(bmf_sdk::JsonParam(graph_para));
     graph.Run();
     // std::cout << graph.Dump() << std::endl;
@@ -57,6 +56,13 @@ void task() {
     nlohmann::json decode_para = {
         {"input_path", "../../files/big_bunny_10s_30fps.mp4"}};
     auto video = graph.Decode(bmf_sdk::JsonParam(decode_para), "", 0);
+
+    auto video_split = 
+        graph.Module({video["video"]}, 
+            "assemble_module", bmf::builder::CPP,
+            bmf_sdk::JsonParam(), "SplitModule",
+            "/root/workspace/bmf_OSPP/output/bmf/cpp_modules/Module_split/libsplit.so", "split_module:SplitModule",
+            bmf::builder::Immediate, 0);
 
     std::vector<bmf::builder::Node> video_copied;
     for (size_t i = 0; i < multi_nums; i++) {

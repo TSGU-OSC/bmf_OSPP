@@ -40,10 +40,13 @@ class TestVideoCModule(BaseTestCase):
         scheduler_cnt += 1
         # print(video["video"])
         # c module processing
-        
+        thread = 1
         copymodule = bmf.module(
             [video['video']],
             "cpp_copy_module",
+            option={
+                "thread": thread,
+            },
             module_path="./libcopy_module.so",
             entry="copy_module::CopyModule",
             input_manager="immediate",
@@ -70,7 +73,7 @@ class TestVideoCModule(BaseTestCase):
         
         encode.node_.scheduler_ = scheduler_cnt
         scheduler_cnt += 1
-        graph.option_["scheduler_count"] = scheduler_cnt
+        graph.option_["scheduler_count"] = scheduler_cnt + thread
         graph.run()
         self.check_video_diff(output_path, expect_result)
 

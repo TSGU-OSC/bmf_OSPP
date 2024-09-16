@@ -12,31 +12,28 @@
  * Lesser General Public License for more details.
  */
 
-#include "../include/assemble_module.h"
+#include "../include/split_module.h"
 #include <bmf/sdk/log.h>
 
-AssembleModule::AssembleModule(int node_id, JsonParam json_param)
+SplitModule::SplitModule(int node_id, JsonParam json_param)
     : Module(node_id, json_param) {
-    BMFLOG_NODE(BMF_INFO, node_id_) << "assemble module";
+    BMFLOG_NODE(BMF_INFO, node_id_) << "split module";
     last_input_num_ = 0;
     last_output_num_ = 0;
-    queue_index_ = 0;
+    stream_index_ = 0;
     return;
 }
 
-int AssembleModule::process(Task &task) {
+int SplitModule::process(Task &task) {
     if (task.get_inputs().size() != last_input_num_) {
         BMFLOG_NODE(BMF_INFO, node_id_)
             << "Input Queue size changed from " << last_input_num_ << " to "
             << task.get_inputs().size();
         last_input_num_ = task.get_inputs().size();
-        /* init queue_map_ */
-        for (int i = 0; i < last_input_num_; i++) {
-            std::shared_ptr<bmf_engine::SafeQueue<Packet>> tmp_queue = 
-                std::make_shared<bmf_engine::SafeQueue<Packet>>();
-            queue_map_.insert(
-                std::pair<int, std::shared_ptr<bmf_engine::SafeQueue<Packet>>>(
-                    i, tmp_queue));
+        if (last_input_num_ > 1) {
+            BMFLOG_NODE(BMF_ERROR, node_id_)
+                << "Input Queue size > 1 may be meet error!";
+            close();
         }
     }
     if (task.get_outputs().size() != last_output_num_) {
@@ -51,38 +48,27 @@ int AssembleModule::process(Task &task) {
         for (auto input_queue : task.get_inputs())
             in_eof_[input_queue.first] = false;
     }
-    /* assemble data from multi input queue */
-    auto tem_queue = task.get_inputs();
-    /* cache pkts into queue_map_ */
-    for (size_t i = 0; i < tem_queue.size(); i++) {
-        while (!tem_queue[i]->empty()) {
-            auto q = tem_queue[i];
-            Packet pkt = q->front();
-            q->pop();
-            queue_map_[i]->push(pkt);
-        }
-    }
-    
-    while (!queue_map_[queue_index_]->empty()) {
-        /* pass through pkts */
-        Packet packet;
-        auto queue = queue_map_.find(queue_index_);
-        
-        if (in_eof_[queue_index_] == true)
-            continue;
-        
-        // if(task.pop_packet_from_input_queue(queue_index_, packet)) {
-        if (queue->second->pop(packet)) {
-            task.fill_output_packet(0, packet);
-            if (packet.timestamp() == BMF_EOF) {
-                in_eof_[queue_index_] = true;
+
+    // auto queue = std::make_shared<bmf_engine::SafeQueue<Packet>>(task.get_inputs()[0]);
+    // auto queue = task.get_inputs().find(0);
+    /* Data Splitting(verified) */
+    Packet pkt;
+    for (auto input_queue : task.get_inputs()) {
+        while (task.pop_packet_from_input_queue(input_queue.first, pkt)) {
+            
+            if (in_eof_[input_queue.first] == true)
+                continue;
+            // fill splitted pkt into multi output stream
+            task.fill_output_packet(stream_index_, pkt);
+            if (pkt.timestamp() == BMF_EOF) {
+                in_eof_[input_queue.first] = true;
             }
             BMFLOG_NODE(BMF_INFO, node_id_)
-                << "get packet :" << packet.timestamp()
-                << " data:" << packet.type_info().name
-                << " in queue:" << queue_index_;
+                << "get packet :" << pkt.timestamp()
+                << " data:" << pkt.type_info().name
+                << " in queue:" << input_queue.first;
 
-            queue_index_ = (queue_index_ + 1) % queue_map_.size();
+            stream_index_ = (stream_index_ + 1) % task.get_outputs().size();
         }
     }
 
@@ -99,9 +85,9 @@ int AssembleModule::process(Task &task) {
     return 0;
 }
 
-int AssembleModule::reset() {
+int SplitModule::reset() {
     in_eof_.clear();
     return 0;
 }
 
-int AssembleModule::close() { return 0; }
+int SplitModule::close() { return 0; }

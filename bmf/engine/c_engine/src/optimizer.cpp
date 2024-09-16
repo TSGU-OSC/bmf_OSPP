@@ -278,7 +278,51 @@ StreamConfig find_first_circle_node(std::vector<NodeConfig> opt_nodes,
     return stream;
 }
 
-NodeConfig create_assemble_node(int id, std::vector<StreamConfig> input_streams, int scheduler, int thread) {
+NodeConfig create_split_node(int id, StreamConfig input_stream,
+                             int scheduler, int thread) {
+    nlohmann:json info;
+
+    info["id"] = id;
+    // info["alias"] = alias_;
+    info["module_info"] = {
+        {"entry", "split_module:SplitModule"},
+        {"name", "SplitModule"},
+        {"path", "/root/workspace/bmf_OSPP/output/bmf/cpp_modules/Module_split/libsplit.so"},
+        {"type", "c++"}
+    };
+    // info["meta_info"] = {
+    //             "callback_binding", []
+    //             "premodule_id", 0
+    //         };
+    info["input_streams"] = nlohmann::json::array();
+    // for (auto &s : input_streams) {
+        info["input_streams"].push_back({
+            {"alias", input_stream.get_alias()},
+            {"identifier", input_stream.get_identifier()},
+            {"notify", input_stream.get_notify()}
+        });
+    // }
+
+    // Use std::ostringstream for safe string concatenation
+    std::ostringstream output_identifier;
+    output_identifier << "split_module_" << id << "_0";
+
+    info["output_streams"] = nlohmann::json::array();
+    info["output_streams"].push_back({
+        {"alias", ""},
+        {"identifier", output_identifier.str()},
+        {"notify", ""}
+    });
+    // info["option"] = option_.json_value_;
+    info["scheduler"] = scheduler;
+    info["thread"] = thread;
+    info["input_manager"] = "immediate";
+
+    return NodeConfig(info);
+}
+
+NodeConfig create_assemble_node(int id, std::vector<StreamConfig> input_streams, 
+                                int scheduler, int thread) {
     nlohmann:json info;
 
     info["id"] = id;
@@ -331,20 +375,24 @@ void process_multi_thread(GraphConfig &graph_config) {
         if (!(node->get_thread() > 1)) {
             upstream_node = node;
         } else if (upstream_node) {
-            upstream_node->set_output_manager("split");
+            auto split_node = create_split_node(nodes.size(), node->get_input_streams()[0], nodes.size(), 1);
+            split_node.set_output_manager("split");
+            nodes.insert(nodes.begin() + nodes_index, split_node);
+            // upstream_node->set_output_manager("split");
             upstream_node = nullptr;
-            int threads = node->get_thread();
-                
+            int threads = nodes[nodes_index + 1].get_thread();
+            nodes[nodes_index + 1].change_input_stream_identifier(nodes[nodes_index].output_streams[0].get_identifier());
+            
             std::vector<StreamConfig> input_streams;
-            input_streams.push_back(node->output_streams[0]);
+            input_streams.push_back(nodes[nodes_index + 1].output_streams[0]);
 
             // Insert copies of the current node
             for (int i = 1; i < threads; ++i) {
                 /* aviod value of node point changed */
-                node = &nodes[nodes_index];
+                node = &nodes[nodes_index + 1];
                 auto new_node = NodeConfig(*node);
                 /* set node id after end node */
-                new_node.set_id((nodes.end()-1)->get_id() + i);
+                new_node.set_id(nodes.size());
                 /* set node id after current ndoe */
 
                 /* TODO:set scheduler for new node */
@@ -359,19 +407,22 @@ void process_multi_thread(GraphConfig &graph_config) {
                 // graph_config.get_option().json_value_.at("/scheduler_count"_json_pointer) = ++scheduler_count;
 
                 input_streams.push_back(new_node.output_streams[0]);
-                nodes.insert(nodes.begin() + nodes_index + i, new_node);
+                nodes.insert(nodes.begin() + nodes_index + 1 + i, new_node);
             }
-
+            nodes[nodes_index + threads].set_thread(1);
             // Insert a new node after the copied nodes
             auto assemble_node = create_assemble_node(nodes.size(), input_streams, nodes.size(), 1);
-            nodes.insert(nodes.begin() + nodes_index + threads, assemble_node);
-            
+            nodes.insert(nodes.begin() + nodes_index + 1 + threads, assemble_node);
+            // TODO: the next node maybe isn't downstream node
             // change downstream node's inputstream to assemble node's outputstream
-            (nodes.begin() + nodes_index + threads + 1)->change_input_stream_identifier((assemble_node.get_output_streams())[0].get_identifier());
+            for (auto &tem_node : nodes)
+                for (auto &input_stream : tem_node.input_streams)
+                    if (input_stream.get_identifier() == nodes[nodes_index + 1].output_streams[0].get_identifier() && tem_node.get_id() != assemble_node.get_id())
+                        tem_node.change_input_stream_identifier((assemble_node.get_output_streams())[0].get_identifier());
             
-            node->set_thread(1);
+            
 
-            nodes_index += threads;
+            nodes_index += threads + 1;
             /* avoid iterator point bug */
             return;
         }

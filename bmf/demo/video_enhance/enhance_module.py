@@ -93,7 +93,7 @@ class EnhanceModule(Module):
 
         while not input_queue.empty():
             pkt = input_queue.get()
-            print(pkt) # print pkt info
+            # print(pkt) # print pkt info
             # process EOS
 
             if pkt.timestamp == Timestamp.EOF:
@@ -108,25 +108,25 @@ class EnhanceModule(Module):
             # use ffmpeg
             frame = ffmpeg.reformat(video_frame,
                                     "rgb24").frame().plane(0).numpy()
-            print("yuv420p convert into rgb24 done!", self._node)
+            # print("yuv420p convert into rgb24 done!", self._node)
 
             output, _ = self.upsampler.enhance(frame, self.output_scale)
-            Log.log_node(
-                LogLevel.ERROR,
-                self._node,
-                "enhance output shape: ",
-                output.shape,
-                " flags: ",
-                output.flags,
-            )
+            # Log.log_node(
+            #     LogLevel.ERROR,
+            #     self._node,
+            #     "enhance output shape: ",
+            #     output.shape,
+            #     " flags: ",
+            #     output.flags,
+            # )
             self.count += 1
-            print("enhance frame count:",self.count)
+            # print("enhance frame count:",self.count)
             output = np.ascontiguousarray(output)
             rgbformat = mp.PixelInfo(mp.kPF_RGB24)
             image = mp.Frame(mp.from_numpy(output), rgbformat)
 
             output_frame = VideoFrame(image)
-            Log.log_node(LogLevel.INFO, self._node, "output video frame")
+            # Log.log_node(LogLevel.INFO, self._node, "output video frame")
 
             output_frame.pts = video_frame.pts
             output_frame.time_base = video_frame.time_base
@@ -134,6 +134,6 @@ class EnhanceModule(Module):
             output_pkt.timestamp = pkt.timestamp
             if output_queue is not None:
                 output_queue.put(output_pkt)
-            print("enhance module process done!")
+            # print("enhance module process done!")
 
         return ProcessResult.OK
