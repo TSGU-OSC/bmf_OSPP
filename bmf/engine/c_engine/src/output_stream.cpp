@@ -40,51 +40,6 @@ int OutputStream::add_mirror_stream(
 
 int OutputStream::propagate_packets(
     std::shared_ptr<SafeQueue<Packet>> packets) {
-    /* Do not Split */
-    // while (!queue_->empty()) {
-    //     Packet pkt;
-    //     if(queue_->pop(pkt)) {
-    //         for (auto &s : mirror_streams_) {
-    //             auto copy_queue = std::make_shared<SafeQueue<Packet>>();
-    //             copy_queue->push(pkt);
-    //             copy_queue->set_identifier(identifier_);
-    //             s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
-    //             std::cout << ++cnt << std::endl;
-    //         }
-    //     }
-    // }
-    /* Data Splitting(verified) optimizing */
-    // while (!queue_->empty()) {
-    //     Packet pkt;
-    //     if (queue_->pop(pkt)) {
-    //         /* TODO: this variable need to be stored in stack */
-    //         //static size_t stream_index = 0; // To keep track of the current stream in mirror_streams_
-    //         if(node_id_ == 4) {
-    //             static int tem_count = 0;
-    //             std::cout << "OutputStream node_id: " << node_id_
-    //                             << "\tpkt's timestamp:" << pkt.timestamp()
-    //                             << "\tcount:" << ++tem_count
-    //                             << std::endl;
-    //         }
-    //         auto &s = mirror_streams_[stream_index_];
-    //         auto copy_queue = std::make_shared<SafeQueue<Packet>>();
-    //         copy_queue->push(pkt);
-    //         copy_queue->set_identifier(identifier_);
-    //         // BMFLOG(BMF_INFO) << "Node id: " << node_id_
-    //         //                  << "\tStream_index: " << stream_index_ 
-    //         //                  << "\tmirror_streams' size: " << mirror_streams_.size()
-    //         //                  << "\tCount :" << ++cnt;
-    //         /* original code for single node push pkts to input stream */
-    //         // s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
-    //         /* code for multi node output(verified) */
-    //         s.input_stream_manager_->add_packets(s.stream_id_, copy_queue, node_id_);
-            
-    //         // std::cout << ++cnt << std::endl;
-    //         stream_index_ = (stream_index_ + 1) % mirror_streams_.size();
-    //     }
-    // }
-
-    /* original version */
     for (auto &s : mirror_streams_) {
         auto copy_queue = std::make_shared<SafeQueue<Packet>>(*packets.get());
         copy_queue->set_identifier(identifier_);
@@ -107,7 +62,7 @@ int OutputStream::add_packets(std::shared_ptr<SafeQueue<Packet>> packets){
     return 0;
 }
 
-int OutputStream::split_packets(std::shared_ptr<SafeQueue<Packet>> packets) {
+int OutputStream::split_packets() {
     /* Data Splitting(verified) */
     while (!queue_->empty()) {
         Packet pkt;
@@ -124,23 +79,10 @@ int OutputStream::split_packets(std::shared_ptr<SafeQueue<Packet>> packets) {
             s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
             /* code for multi node output(verified) */
             // s.input_stream_manager_->add_packets(s.stream_id_, copy_queue, node_id_);
-            
             stream_index_ = (stream_index_ + 1) % mirror_streams_.size();
         }
-        // if(packets->empty() && pkt.timestamp() != BMF_EOF) {
-        //     return 0;
-        // } else {
-        //     for (int i = 1; i < mirror_streams_.size(); i++) {
-        //         auto &s = mirror_streams_[stream_index_];
-        //         auto copy_queue = std::make_shared<SafeQueue<Packet>>();
-        //         copy_queue->push(bmf_sdk::Packet::generate_eof_packet());
-        //         copy_queue->set_identifier(identifier_);
-        //         s.input_stream_manager_->add_packets(s.stream_id_, copy_queue);
-        //         stream_index_ = (stream_index_ + 1) % mirror_streams_.size();
-        //     }
-        //     return 0;
-        // }
     }
+    return 0;
 }
 
 int OutputStream::add_upstream_nodes(int node_id) {

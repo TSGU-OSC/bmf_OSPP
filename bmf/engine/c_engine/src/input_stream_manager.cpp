@@ -41,8 +41,7 @@ InputStreamManager::InputStreamManager(int node_id,
         input_streams_[i] = std::make_shared<InputStream>(
             i, input_streams[i], node_id, empt, max_queue_size);
         stream_id_list_.push_back(i);
-
-        /* init tem_queue_ */
+        // init tem_queue_
         std::shared_ptr<SafeQueue<Packet>> tmp_queue = 
             std::make_shared<SafeQueue<Packet>>();
         tem_queue_.insert(
@@ -165,8 +164,7 @@ void InputStreamManager::add_packets(
     if (packets->size() == 0)
         return;
     if (input_streams_.count(stream_id) > 0) {
-        // bool is_empty = input_streams_[stream_id]->is_empty();
-        /* tem store pkts for sorting */
+        // Temporarily storing packets for sorting 
         auto it = tem_queue_.find(stream_id);
         if(it == tem_queue_.end()) {
             BMFLOG(BMF_ERROR) << "Coundn't find right upstream to add pkts";
@@ -176,68 +174,31 @@ void InputStreamManager::add_packets(
         static size_t push_count = 0;
         while (packets->pop(pkt)) {
             it->second->push(pkt);
-            if(upstream_node_id != 4 && upstream_node_id != 0) {
-                std::cout << "upstream_node_id: " << upstream_node_id
-                                << "\tstorage: " << it->second->size()
-                                // << "\tpush count:" << ++push_count_[it->first]    
-                                << "\tpush count totally: " << ++push_count
-                                << "\tpkt's timestamp:" << pkt.timestamp()
-                                << std::endl;
-            }
-            
         }
 
-        //if(is_tem_queue_all_filled()) {
-            // input_streams_[stream_id]->add_packets(packets);
-            /* cache all pkts into first stream */
-            // while(!tem_queue_[queue_index_]->empty() && stream_id == stream_id_list_.front()) {
-            /* push data into different stream */
-            while(!tem_queue_[queue_index_]->empty()) {
-                // Packet tem_pkt;
-                
-                auto queue = tem_queue_.find(queue_index_);
-                static size_t pop_count = 0;
-                /* avoid multi OS execute this code at same time */
-                // std::lock_guard<std::mutex> guard(add_pkts_mutex_);
-                /* avoid multi outputstream into this code at same time */
-                if(queue->second->pop(pkt)) {
-                    // if(pkt.timestamp() == BMF_EOF) input_block_ = true;
-                    auto copy_queue = std::make_shared<SafeQueue<Packet>>();
-                    copy_queue->push(pkt);
-                    input_streams_[queue_index_]->add_packets(copy_queue);
-                    /* remove useless input stream but first input stream */
-                    // if(pkt.timestamp() == BMF_EOF) {
-                    //     int streams_cnt = stream_id_list_.size();
-                    //     for (size_t i = 1; i < streams_cnt; i++) {
-                    //         remove_stream(i);
-                    //     }
-                    //     erase_tem_queue();
-                    // }
-                } else {
-                    return;
-                }
-                // if(upstream_node_id != 0 && upstream_node_id != 4) {
-                //     std::cout << "queue_index_: " << queue_index_ 
-                //                     // << "\tfirst upstream_node_id:" << first_upstream_node_id_
-                //                     << "\tqueue id: " << queue->first
-                //                     << "\tstorage: " << queue->second->size()
-                //                     // << "\tpop count:" << ++(pop_count_[queue->first])
-                //                     << "\tpop count totally:" << ++pop_count
-                //                     << "\tpkt's timestamp: " <<pkt.timestamp()
-                //                     << std::endl;
-                // } 
 
-                queue_index_ = ( queue_index_ + 1 ) % tem_queue_.size();
-                /* execute this after add packets success */
-                if (callback_.sched_required != NULL) {
-                    // if (this->type() != "Immediate" || (this->type() == "Immediate"
-                    // && is_empty))
-                    // callback_.notify_cb();
-                    callback_.sched_required(node_id_, false);
-                }
+        // push data into different streams
+        while(!tem_queue_[queue_index_]->empty()) {
+            auto queue = tem_queue_.find(queue_index_);
+            static size_t pop_count = 0;
+
+            if(queue->second->pop(pkt)) {
+                auto copy_queue = std::make_shared<SafeQueue<Packet>>();
+                copy_queue->push(pkt);
+                input_streams_[queue_index_]->add_packets(copy_queue);
+            } else {
+                return;
             }
+            queue_index_ = ( queue_index_ + 1 ) % tem_queue_.size();
+            
+            if (callback_.sched_required != NULL) {
+                // if (this->type() != "Immediate" || (this->type() == "Immediate"
+                // && is_empty))
+                // callback_.notify_cb();
+                callback_.sched_required(node_id_, false);
+            }
+        }
 
-        //}
 
     }
 }
@@ -252,14 +213,6 @@ Packet InputStreamManager::pop_next_packet(int stream_id, bool block) {
 
 int InputStreamManager::add_upstream_nodes(int node_id) {
     upstream_nodes_.insert(node_id);
-
-    // std::shared_ptr<SafeQueue<Packet>> tmp_queue =
-    //     std::make_shared<SafeQueue<Packet>>();
-    // tem_queue_.insert(
-    //     std::pair<int, std::shared_ptr<SafeQueue<Packet>>>(
-    //         node_id, tmp_queue));
-    /* init the queue index is first node id */
-    first_upstream_node_id_ = tem_queue_.begin()->first;
     return 0;
 }
 
@@ -269,24 +222,6 @@ void InputStreamManager::remove_upstream_nodes(int node_id) {
 
 bool InputStreamManager::find_upstream_nodes(int node_id) {
     return upstream_nodes_.find(node_id) != upstream_nodes_.end();
-}
-
-bool InputStreamManager::is_tem_queue_all_filled() {
-    int cnt = 0 ; 
-    for(auto queue : tem_queue_) {
-        if(queue.second->size() >= 1) cnt++;
-    }
-    if(cnt >= tem_queue_.size()) return true;
-    return false;
-}
-
-bool InputStreamManager::erase_tem_queue() {
-    for(auto queue : tem_queue_) {
-        Packet pkt;
-        while(queue.second->pop(pkt)) {
-
-        }
-    }
 }
 
 ImmediateInputStreamManager::ImmediateInputStreamManager(

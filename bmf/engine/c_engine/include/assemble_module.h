@@ -17,7 +17,7 @@
 
 #include <bmf/sdk/module.h>
 #include <bmf/sdk/module_registry.h>
-#include "/root/workspace/bmf_OSPP/bmf/engine/c_engine/include/safe_queue.h"
+#include "safe_queue.h"
 USE_BMF_SDK_NS
 class AssembleModule : public Module {
   public:

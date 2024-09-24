@@ -49,8 +49,6 @@ int SplitModule::process(Task &task) {
             in_eof_[input_queue.first] = false;
     }
 
-    // auto queue = std::make_shared<bmf_engine::SafeQueue<Packet>>(task.get_inputs()[0]);
-    // auto queue = task.get_inputs().find(0);
     /* Data Splitting(verified) */
     Packet pkt;
     for (auto input_queue : task.get_inputs()) {

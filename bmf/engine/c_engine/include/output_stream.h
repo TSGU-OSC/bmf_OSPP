@@ -42,10 +42,10 @@ class OutputStream {
                       int stream_id);
 
     int propagate_packets(std::shared_ptr<SafeQueue<Packet>> packets);
-    /* cache for splitting data to multi downstream node */
+    // Cache for splitting data to multi downstream node
     int add_packets(std::shared_ptr<SafeQueue<Packet>> packets);
-    /* spilt pkts for multi downstream node */
-    int split_packets(std::shared_ptr<SafeQueue<Packet>> packets);
+    // Split packets from the queue and distributes them to mirror streams
+    int split_packets();
 
     int add_upstream_nodes(int node_id);
 
@@ -57,7 +57,7 @@ class OutputStream {
     std::string notify_;
     std::string alias_;
     std::vector<MirrorStream> mirror_streams_;
-    // Cache for multi ISM
+    // Cache packets for splitting
     std::shared_ptr<SafeQueue<Packet>> queue_;
 };
 END_BMF_ENGINE_NS

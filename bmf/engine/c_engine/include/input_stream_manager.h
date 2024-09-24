@@ -78,11 +78,7 @@ class InputStreamManager {
 
     int add_upstream_nodes(int node_id);
     void remove_upstream_nodes(int node_id);
-    bool find_upstream_nodes(int node_id);
-
-    bool is_tem_queue_all_filled();
-
-    bool erase_tem_queue();    
+    bool find_upstream_nodes(int node_id);  
 
     int node_id_;
     std::map<int, std::shared_ptr<InputStream>> input_streams_;

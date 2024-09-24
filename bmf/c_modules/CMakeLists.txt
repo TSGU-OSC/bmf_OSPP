@@ -110,26 +110,6 @@ set_soname(pass_through)
 mac_update(pass_through)
 module_install(pass_through)
 
-# split module
-set(SPLIT_HDRS include/split_module.h)
-set(SPLIT_SRCS src/split_module.cpp)
-add_library(split SHARED ${SPLIT_HDRS} ${SPLIT_SRCS})
-target_include_directories(split PUBLIC include)
-target_link_libraries(split PRIVATE bmf_module_sdk)
-set_soname(split)
-mac_update(split)
-module_install(split)
-
-# assemble module
-set(ASSEMBLE_HDRS include/assemble_module.h)
-set(ASSEMBLE_SRCS src/assemble_module.cpp)
-add_library(assemble SHARED ${ASSEMBLE_HDRS} ${ASSEMBLE_SRCS})
-target_include_directories(assemble PUBLIC include)
-target_link_libraries(assemble PRIVATE bmf_module_sdk)
-set_soname(assemble)
-mac_update(assemble)
-module_install(assemble)
-
 # clock module
 set(CLOCK_MODULE_HDRS include/clock_module.h include/fraction.hpp)
 set(CLOCK_MODULE_SRCS src/clock_module.cpp)
