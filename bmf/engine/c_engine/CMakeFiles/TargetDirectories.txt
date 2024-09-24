@@ -1,8 +1,0 @@
-/root/workspace/bmf/bmf/engine/c_engine/CMakeFiles/engine.dir
-/root/workspace/bmf/bmf/engine/c_engine/CMakeFiles/bmf_go_loader.dir
-/root/workspace/bmf/bmf/engine/c_engine/CMakeFiles/edit_cache.dir
-/root/workspace/bmf/bmf/engine/c_engine/CMakeFiles/rebuild_cache.dir
-/root/workspace/bmf/bmf/engine/c_engine/CMakeFiles/list_install_components.dir
-/root/workspace/bmf/bmf/engine/c_engine/CMakeFiles/install.dir
-/root/workspace/bmf/bmf/engine/c_engine/CMakeFiles/install/local.dir
-/root/workspace/bmf/bmf/engine/c_engine/CMakeFiles/install/strip.dir

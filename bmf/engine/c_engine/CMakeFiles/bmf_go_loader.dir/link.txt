@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -shared -Wl,-soname,libbmf_go_loader.so -o libbmf_go_loader.so CMakeFiles/bmf_go_loader.dir/src/loader/go_module_loader.o  -lbmf_module_sdk 
