@@ -1,1 +1,0 @@
-g++ -std=c++17 -g -o test_input_stream test_input_stream.cpp call_back_for_test.cpp -I/root/workspace/bmf_OSPP/output/bmf/include -I/root/workspace/bmf_OSPP/bmf/hml/third_party/gtest/googletest/include -L/root/workspace/bmf_OSPP/output/bmf/lib -lengine -lbmf_module_sdk -lhmp -L/root/workspace/bmf_OSPP/bmf/hml/third_party/gtest/build/lib -lgtest -lgtest_main -lpthread

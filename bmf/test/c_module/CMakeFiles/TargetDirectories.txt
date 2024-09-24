@@ -1,3 +1,0 @@
-/root/workspace/bmf_OSPP/bmf/test/c_module/CMakeFiles/copy_module.dir
-/root/workspace/bmf_OSPP/bmf/test/c_module/CMakeFiles/edit_cache.dir
-/root/workspace/bmf_OSPP/bmf/test/c_module/CMakeFiles/rebuild_cache.dir
