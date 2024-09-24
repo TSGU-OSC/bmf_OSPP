@@ -279,7 +279,7 @@ bool ImmediateInputStreamManager::fill_task_input(Task &task) {
 
     if (stream_done_.size() == input_streams_.size()) {
         task.set_timestamp(BMF_EOF);
-        if(node_id_ == 4) BMFLOG(BMF_INFO) << "node 4 task set BMF_EOF";
+        // if(node_id_ == 4) BMFLOG(BMF_INFO) << "node 4 task set BMF_EOF";
     }
     return task_filled;
 }

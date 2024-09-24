@@ -199,7 +199,7 @@ int Graph::init_nodes() {
         return this->scheduler_->clear_task(node_id, scheduler_queue_id);
     };
     // init node
-    for (auto &node_config : graph_config_.get_nodes()) {       
+    for (auto &node_config : graph_config_.get_nodes()) {
         std::shared_ptr<Module> module_pre_allocated;
         auto node_id = node_config.get_id();
         if (pre_modules_.count(node_id) > 0)
@@ -235,7 +235,7 @@ int Graph::init_nodes() {
     }
 
     // create connections
-    /* binding the OS and ISM */
+    // binding the OS and ISM
     for (auto &node_iter : nodes_) {
         std::map<int, std::shared_ptr<OutputStream>> output_streams;
         node_iter.second->get_output_streams(output_streams);
@@ -244,7 +244,7 @@ int Graph::init_nodes() {
             add_all_mirrors_for_output_stream(output_stream.second);
         }
     }
-    /* set the upstreams' node id (OS->ISM)  */
+    // set the upstreams' node id (OS->ISM)
     for (auto &node_iter : nodes_) {
         std::map<int, std::shared_ptr<OutputStream>> output_streams;
         node_iter.second->get_output_streams(output_streams);

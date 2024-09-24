@@ -184,7 +184,6 @@ then
 else
     mkdir -p build && cd build
     cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-	-DCMAKE_CXX_FLAGS="-O0" \
         -DBMF_PYENV=$(python3 -c "import sys; print('{}.{}'.format(sys.version_info.major, sys.version_info.minor))") \
         -DCOVERAGE=${COVERAGE_OPTION} \
         -DBMF_LOCAL_DEPENDENCIES=${LOCAL_BUILD} \

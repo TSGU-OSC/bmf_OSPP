@@ -12,7 +12,6 @@ def run():
     graph = bmf.graph()
     video = graph.decode({
         "input_path": input_file,
-        "loglevel": "info",
     })
 
     enhance = bmf.module(
@@ -75,7 +74,6 @@ def run():
             "output_path": output_compose_file,
         },
     )
-    graph.set_option({"dump_graph": 1})
     graph.run()
 
 

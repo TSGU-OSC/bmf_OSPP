@@ -17,13 +17,13 @@
 
 #include "../include/common.h"
 #include "../include/input_stream.h"
-//#include <iostream>
+
 #include "gtest/gtest.h"
 
 USE_BMF_ENGINE_NS
 USE_BMF_SDK_NS
 TEST(input_stream, add_normal_packets) {
-//int main() {
+
     int stream_id = 1;
     std::string name = "video";
     int max_queue_size = 5;
@@ -43,9 +43,6 @@ TEST(input_stream, add_normal_packets) {
     EXPECT_EQ(input_stream.get_time_bounding(), 11);
     EXPECT_EQ(call_back.node_id_, 0);
     EXPECT_EQ(call_back.is_add_, 0);
-    //if (input_stream.get_time_bounding()==11) std::cout << "get time bounding is 11!\n";
-    //if (call_back.node_id_==0) std::cout << "node is is 0!\n";
-    //if (call_back.is_add_==0) std::cout << "is add = 0\n";
 }
 
 // no need run this test for new engine

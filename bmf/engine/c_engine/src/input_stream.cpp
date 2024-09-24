@@ -68,7 +68,6 @@ int InputStream::add_packets(std::shared_ptr<SafeQueue<Packet>> &packets) {
     Packet pkt;
     while (packets->pop(pkt)) {
         queue_->push(pkt);
-        // if(node_id_ == 4) std::cout << "add pkts, queue's storage: " << queue_->size() << "\tpkt's timestamp: " << pkt.timestamp() << std::endl;
         // advance time bounding
         next_time_bounding_ = pkt.timestamp() + 1;
         // if received EOS, set stream done

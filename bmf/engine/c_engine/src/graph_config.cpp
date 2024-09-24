@@ -127,7 +127,7 @@ NodeMetaInfo::NodeMetaInfo(const NodeMetaInfo &other)
     : premodule_id(other.premodule_id),
       bundle(other.bundle),
       queue_size_limit(other.queue_size_limit),
-      callback_binding(other.callback_binding){
+      callback_binding(other.callback_binding) {
 }
 
 void NodeMetaInfo::init(nlohmann::json &node_meta) {
@@ -178,18 +178,17 @@ NodeConfig::NodeConfig(nlohmann::json &node_config) { init(node_config); }
 
 NodeConfig::NodeConfig(const NodeConfig &other)
     : id(other.id),
-      module(other.module),  // Assuming ModuleConfig has a copy constructor
-      meta(other.meta),      // Assuming NodeMetaInfo has a copy constructor
+      module(other.module),
+      meta(other.meta),
       // input_streams(other.input_streams),  // Deep copy of vector
       // output_streams(other.output_streams),  // Deep copy of vector
-      option(other.option),  // Assuming JsonParam has a copy constructor
+      option(other.option),
       scheduler(other.scheduler),
       thread(other.thread),
       input_manager(other.input_manager),
       output_manager(other.output_manager),
       alias(other.alias),
       action(other.action) {
-    // Any additional deep copying logic, if necessary, can be added here.
     for(auto input_stream : other.input_streams) 
         add_input_stream(input_stream);
     for (auto output_stream : other.output_streams)

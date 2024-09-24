@@ -129,7 +129,7 @@ class NodeMetaInfo {
     std::map<int64_t, uint32_t> callback_binding;
 };
 
-class NodeConfig {  
+class NodeConfig {
   public:
     NodeConfig() = default;
 
