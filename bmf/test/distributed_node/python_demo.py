@@ -40,7 +40,7 @@ class TestVideoCModule(BaseTestCase):
         scheduler_cnt += 1
         # print(video["video"])
         # c module processing
-        thread = 1
+        thread = 3
         copymodule = bmf.module(
             [video['video']],
             "cpp_copy_module",

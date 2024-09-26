@@ -64,7 +64,7 @@ def run():
                 "preset": "veryfast",
                 "bf": 0,
                 "vsync": "vfr",
-                "max_fr": 30,             
+                "max_fr": 30,
             },
             "audio_params": {
                 "sample_rate": 44100,

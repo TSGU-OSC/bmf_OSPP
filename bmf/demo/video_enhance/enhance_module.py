@@ -109,8 +109,6 @@ class EnhanceModule(Module):
                 " flags: ",
                 output.flags,
             )
-            self.count += 1
-            # print("enhance frame count:",self.count)
             output = np.ascontiguousarray(output)
             rgbformat = mp.PixelInfo(mp.kPF_RGB24)
             image = mp.Frame(mp.from_numpy(output), rgbformat)

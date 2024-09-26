@@ -22,6 +22,7 @@ from base_test.media_info import MediaInfo
 
 sys.path.append("./c_module")
 
+
 class TestVideoCModule(BaseTestCase):
 
     @timeout_decorator.timeout(seconds=120)
