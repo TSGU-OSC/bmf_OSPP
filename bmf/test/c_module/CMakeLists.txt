@@ -1,11 +1,7 @@
 file(GLOB SRCS *.cc *.h)
 
-include_directories(/root/workspace/bmf_OSPP/output/bmf/include)
-link_directories(/root/workspace/bmf_OSPP/output/bmf/lib)
-
 add_library(copy_module SHARED ${SRCS})
-SET(CMAKE_CXX_FLAGS "-std=c++17")
-#set_property(TARGET PROPERTY CXX_STANDARD 17)
+set_property(TARGET PROPERTY CXX_STANDARD 17)
 
 target_link_libraries(copy_module
     PRIVATE
