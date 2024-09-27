@@ -5,7 +5,7 @@ add_executable(test_cpp_builder ${SRCS})
 
 target_link_libraries(test_cpp_builder
     PRIVATE 
-        bmf_module_sdk engine nlohmann
+        bmf_module_sdk engine nlohmann 
         gtest
 )
 

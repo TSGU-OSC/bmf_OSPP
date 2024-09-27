@@ -73,11 +73,11 @@ std::shared_ptr<RealNode> RealStream::AddModule(
     std::vector<std::shared_ptr<RealStream>> inputStreams,
     std::string const &moduleName, ModuleType moduleType,
     std::string const &modulePath, std::string const &moduleEntry,
-    InputManagerType inputStreamManager, int scheduler, int thread) {
+    InputManagerType inputStreamManager, int scheduler) {
     inputStreams.insert(inputStreams.begin(), shared_from_this());
     return graph_.lock()->AddModule(alias, option, inputStreams, moduleName,
                                     moduleType, modulePath, moduleEntry,
-                                    inputStreamManager, scheduler, thread);
+                                    inputStreamManager, scheduler);
 }
 
 nlohmann::json RealStream::Dump() {
@@ -147,12 +147,11 @@ RealNode::RealNode(const std::shared_ptr<RealGraph> &graph, int id,
                    std::string const &moduleName, ModuleType moduleType,
                    std::string const &modulePath,
                    std::string const &moduleEntry,
-                   InputManagerType inputStreamManager, int scheduler,
-                   int thread)
+                   InputManagerType inputStreamManager, int scheduler)
     : graph_(graph), id_(id), alias_(std::move(alias)), option_(option),
       moduleInfo_({moduleName, moduleType, modulePath, moduleEntry}),
       metaInfo_(), inputStreams_(std::move(inputStreams)),
-      inputManager_(inputStreamManager), scheduler_(scheduler), thread_(thread) {
+      inputManager_(inputStreamManager), scheduler_(scheduler) {
     //            outputStreams_.reserve(BMF_MAX_CAPACITY);
 }
 
@@ -236,12 +235,11 @@ RealNode::AddModule(std::string const &alias, const bmf_sdk::JsonParam &option,
                     std::string const &moduleName, ModuleType moduleType,
                     std::string const &modulePath,
                     std::string const &moduleEntry,
-                    InputManagerType inputStreamManager, int scheduler,
-                    int thread) {
+                    InputManagerType inputStreamManager, int scheduler) {
     inputStreams.insert(inputStreams.begin(), Stream(0));
     return graph_.lock()->AddModule(alias, option, inputStreams, moduleName,
                                     moduleType, modulePath, moduleEntry,
-                                    inputStreamManager, scheduler, thread);
+                                    inputStreamManager, scheduler);
 }
 
 nlohmann::json RealNode::Dump() {
@@ -259,7 +257,6 @@ nlohmann::json RealNode::Dump() {
         info["output_streams"].push_back(s->Dump());
     info["option"] = option_.json_value_;
     info["scheduler"] = scheduler_;
-    info["thread"] = thread_;
     switch (inputManager_) {
     case Default:
         info["input_manager"] = "default";
@@ -323,7 +320,7 @@ std::shared_ptr<RealNode> RealGraph::AddModule(
     const std::vector<std::shared_ptr<RealStream>> &inputStreams,
     std::string const &moduleName, ModuleType moduleType,
     std::string const &modulePath, std::string const &moduleEntry,
-    InputManagerType inputStreamManager, int scheduler, int thread) {
+    InputManagerType inputStreamManager, int scheduler) {
     //            if (nodes_.size() + 1 >= BMF_MAX_CAPACITY)
     //                throw std::overflow_error("Node number bigger than max
     //                capacity (1024 by default).");
@@ -332,7 +329,7 @@ std::shared_ptr<RealNode> RealGraph::AddModule(
     int node_id = nodes_.size();
     nodes_.emplace_back(std::move(std::make_shared<RealNode>(
         shared_from_this(), node_id, alias, option, inputStreams, moduleName,
-        moduleType, modulePath, moduleEntry, inputStreamManager, scheduler, thread)));
+        moduleType, modulePath, moduleEntry, inputStreamManager, scheduler)));
     return nodes_[node_id];
 }
 
@@ -524,11 +521,10 @@ Node Stream::Module(const std::vector<Stream> &inStreams,
                     const bmf_sdk::JsonParam &option, std::string const &alias,
                     std::string const &modulePath,
                     std::string const &moduleEntry,
-                    InputManagerType inputStreamManager, int scheduler, 
-                    int thread) {
+                    InputManagerType inputStreamManager, int scheduler) {
     return ConnectNewModule(alias, option, inStreams, moduleName, moduleType,
                             modulePath, moduleEntry, inputStreamManager,
-                            scheduler, thread);
+                            scheduler);
 }
 
 Node Stream::CppModule(const std::vector<Stream> &inStreams,
@@ -536,10 +532,10 @@ Node Stream::CppModule(const std::vector<Stream> &inStreams,
                        const bmf_sdk::JsonParam &option,
                        std::string const &alias, std::string const &modulePath,
                        std::string const &moduleEntry,
-                       InputManagerType inputStreamManager, int scheduler, int thread) {
+                       InputManagerType inputStreamManager, int scheduler) {
     return ConnectNewModule(alias, option, inStreams, moduleName, CPP,
                             modulePath, moduleEntry, inputStreamManager,
-                            scheduler, thread);
+                            scheduler);
 }
 
 Node Stream::PythonModule(const std::vector<Stream> &inStreams,
@@ -548,11 +544,10 @@ Node Stream::PythonModule(const std::vector<Stream> &inStreams,
                           std::string const &alias,
                           std::string const &modulePath,
                           std::string const &moduleEntry,
-                          InputManagerType inputStreamManager, int scheduler,
-                          int thread) {
+                          InputManagerType inputStreamManager, int scheduler) {
     return ConnectNewModule(alias, option, inStreams, moduleName, Python,
                             modulePath, moduleEntry, inputStreamManager,
-                            scheduler, thread);
+                            scheduler);
 }
 
 Node Stream::GoModule(const std::vector<Stream> &inStreams,
@@ -560,17 +555,16 @@ Node Stream::GoModule(const std::vector<Stream> &inStreams,
                       const bmf_sdk::JsonParam &option,
                       std::string const &alias, std::string const &modulePath,
                       std::string const &moduleEntry,
-                      InputManagerType inputStreamManager, int scheduler,
-                      int thread) {
+                      InputManagerType inputStreamManager, int scheduler) {
     return ConnectNewModule(alias, option, inStreams, moduleName, Go,
                             modulePath, moduleEntry, inputStreamManager,
-                            scheduler, thread);
+                            scheduler);
 }
 
 Node Stream::Decode(const bmf_sdk::JsonParam &decodePara,
                     std::string const &alias) {
     auto nd = ConnectNewModule(alias, decodePara, {}, "c_ffmpeg_decoder", CPP,
-                               "", "", Immediate, 0, 1);
+                               "", "", Immediate, 0);
     nd[0].SetNotify("video");
     nd[1].SetNotify("audio");
     return nd;
@@ -579,14 +573,14 @@ Node Stream::Decode(const bmf_sdk::JsonParam &decodePara,
 Node Stream::EncodeAsVideo(const bmf_sdk::JsonParam &encodePara,
                            std::string const &alias) {
     return ConnectNewModule(alias, encodePara, {}, "c_ffmpeg_encoder", CPP, "",
-                            "", Immediate, 1, 1);
+                            "", Immediate, 1);
 }
 
 Node Stream::EncodeAsVideo(Stream audioStream,
                            const bmf_sdk::JsonParam &encodePara,
                            std::string const &alias) {
     return ConnectNewModule(alias, encodePara, {std::move(audioStream)},
-                            "c_ffmpeg_encoder", CPP, "", "", Immediate, 1, 1);
+                            "c_ffmpeg_encoder", CPP, "", "", Immediate, 1);
 }
 
 Node Stream::FFMpegFilter(const std::vector<Stream> &inStreams,
@@ -598,7 +592,7 @@ Node Stream::FFMpegFilter(const std::vector<Stream> &inStreams,
     realPara["para"] = filterPara.json_value_;
     filterPara = bmf_sdk::JsonParam(realPara);
     return ConnectNewModule(alias, filterPara, inStreams, "c_ffmpeg_filter",
-                            CPP, "", "", Immediate, 0, 1);
+                            CPP, "", "", Immediate, 0);
 }
 
 Node Stream::Fps(int fps, std::string const &alias) {
@@ -612,7 +606,7 @@ Node Stream::InternalFFMpegFilter(const std::vector<Stream> &inStreams,
                                   const bmf_sdk::JsonParam &filterPara,
                                   std::string const &alias) {
     return ConnectNewModule(alias, filterPara, inStreams, "c_ffmpeg_filter",
-                            CPP, "", "", Immediate, 0, 1);
+                            CPP, "", "", Immediate, 0);
 }
 
 Node Stream::ConnectNewModule(
@@ -620,14 +614,14 @@ Node Stream::ConnectNewModule(
     const std::vector<Stream> &inputStreams, const std::string &moduleName,
     ModuleType moduleType, const std::string &modulePath,
     const std::string &moduleEntry, InputManagerType inputStreamManager,
-    int scheduler, int thread) {
+    int scheduler) {
     std::vector<std::shared_ptr<internal::RealStream>> inRealStreams;
     inRealStreams.reserve(inputStreams.size());
     for (auto &s : inputStreams)
         inRealStreams.emplace_back(s.baseP_);
     return Node(baseP_->AddModule(alias, option, inRealStreams, moduleName,
                                   moduleType, modulePath, moduleEntry,
-                                  inputStreamManager, scheduler, thread));
+                                  inputStreamManager, scheduler));
 }
 
 std::string Stream::GetName() { return baseP_->GetName(); }
@@ -674,10 +668,10 @@ Node Node::Module(const std::vector<class Stream> &inStreams,
                   std::string const &moduleName, ModuleType moduleType,
                   const bmf_sdk::JsonParam &option, std::string const &alias,
                   std::string const &modulePath, std::string const &moduleEntry,
-                  InputManagerType inputStreamManager, int scheduler, int thread) {
+                  InputManagerType inputStreamManager, int scheduler) {
     return ConnectNewModule(alias, option, inStreams, moduleName, moduleType,
                             modulePath, moduleEntry, inputStreamManager,
-                            scheduler, thread);
+                            scheduler);
 }
 
 Node Node::CppModule(const std::vector<class Stream> &inStreams,
@@ -685,11 +679,10 @@ Node Node::CppModule(const std::vector<class Stream> &inStreams,
                      const bmf_sdk::JsonParam &option, std::string const &alias,
                      std::string const &modulePath,
                      std::string const &moduleEntry,
-                     InputManagerType inputStreamManager, int scheduler,
-                     int thread) {
+                     InputManagerType inputStreamManager, int scheduler) {
     return ConnectNewModule(alias, option, inStreams, moduleName, CPP,
                             modulePath, moduleEntry, inputStreamManager,
-                            scheduler, thread);
+                            scheduler);
 }
 
 Node Node::PythonModule(const std::vector<class Stream> &inStreams,
@@ -697,11 +690,10 @@ Node Node::PythonModule(const std::vector<class Stream> &inStreams,
                         const bmf_sdk::JsonParam &option,
                         std::string const &alias, std::string const &modulePath,
                         std::string const &moduleEntry,
-                        InputManagerType inputStreamManager, int scheduler, 
-                        int thread) {
+                        InputManagerType inputStreamManager, int scheduler) {
     return ConnectNewModule(alias, option, inStreams, moduleName, Python,
                             modulePath, moduleEntry, inputStreamManager,
-                            scheduler, thread);
+                            scheduler);
 }
 
 Node Node::GoModule(const std::vector<class Stream> &inStreams,
@@ -709,17 +701,16 @@ Node Node::GoModule(const std::vector<class Stream> &inStreams,
                     const bmf_sdk::JsonParam &option, std::string const &alias,
                     std::string const &modulePath,
                     std::string const &moduleEntry,
-                    InputManagerType inputStreamManager, int scheduler,
-                    int thread) {
+                    InputManagerType inputStreamManager, int scheduler) {
     return ConnectNewModule(alias, option, inStreams, moduleName, Go,
                             modulePath, moduleEntry, inputStreamManager,
-                            scheduler, thread);
+                            scheduler);
 }
 
 Node Node::Decode(const bmf_sdk::JsonParam &decodePara,
                   std::string const &alias) {
     auto nd = ConnectNewModule(alias, decodePara, {}, "c_ffmpeg_decoder", CPP,
-                               "", "", Immediate, 0, 1);
+                               "", "", Immediate, 0);
     nd[0].SetNotify("video");
     nd[1].SetNotify("audio");
     return nd;
@@ -728,14 +719,14 @@ Node Node::Decode(const bmf_sdk::JsonParam &decodePara,
 Node Node::EncodeAsVideo(const bmf_sdk::JsonParam &encodePara,
                          std::string const &alias) {
     return ConnectNewModule(alias, encodePara, {}, "c_ffmpeg_encoder", CPP, "",
-                            "", Immediate, 1, 1);
+                            "", Immediate, 1);
 }
 
 Node Node::EncodeAsVideo(class Stream audioStream,
                          const bmf_sdk::JsonParam &encodePara,
                          std::string const &alias) {
     return ConnectNewModule(alias, encodePara, {std::move(audioStream)},
-                            "c_ffmpeg_encoder", CPP, "", "", Immediate, 1, 1);
+                            "c_ffmpeg_encoder", CPP, "", "", Immediate, 1);
 }
 
 Node Node::FFMpegFilter(const std::vector<class Stream> &inStreams,
@@ -747,7 +738,7 @@ Node Node::FFMpegFilter(const std::vector<class Stream> &inStreams,
     realPara["para"] = filterPara.json_value_;
     filterPara = bmf_sdk::JsonParam(realPara);
     return ConnectNewModule(alias, filterPara, inStreams, "c_ffmpeg_filter",
-                            CPP, "", "", Immediate, 0, 1);
+                            CPP, "", "", Immediate, 0);
 }
 
 Node Node::Fps(int fps, std::string const &alias) {
@@ -761,7 +752,7 @@ Node Node::InternalFFMpegFilter(const std::vector<class Stream> &inStreams,
                                 const bmf_sdk::JsonParam &filterPara,
                                 std::string const &alias) {
     return ConnectNewModule(alias, filterPara, inStreams, "c_ffmpeg_filter",
-                            CPP, "", "", Immediate, 0, 1);
+                            CPP, "", "", Immediate, 0);
 }
 
 Node Node::ConnectNewModule(
@@ -769,14 +760,14 @@ Node Node::ConnectNewModule(
     const std::vector<class Stream> &inputStreams,
     std::string const &moduleName, ModuleType moduleType,
     std::string const &modulePath, std::string const &moduleEntry,
-    InputManagerType inputStreamManager, int scheduler, int thread) {
+    InputManagerType inputStreamManager, int scheduler) {
     std::vector<std::shared_ptr<internal::RealStream>> inRealStreams;
     inRealStreams.reserve(inputStreams.size());
     for (auto &s : inputStreams)
         inRealStreams.emplace_back(s.baseP_);
     return Node(baseP_->AddModule(alias, option, inRealStreams, moduleName,
                                   moduleType, modulePath, moduleEntry,
-                                  inputStreamManager, scheduler, thread));
+                                  inputStreamManager, scheduler));
 }
 
 Graph::Graph(GraphMode runMode, bmf_sdk::JsonParam graphOption)
@@ -794,10 +785,6 @@ bmf::BMFGraph Graph::Instance() { return graph_->Instance(); }
 
 int Graph::Run(bool dumpGraph, bool needMerge) {
     return graph_->Run(dumpGraph, needMerge);
-}
-
-void Graph::Start(bool dumpGraph, bool needMerge) {
-    return graph_->Start(dumpGraph, needMerge);
 }
 
 void Graph::Start(std::vector<Stream> &generateStreams, bool dumpGraph,
@@ -836,10 +823,9 @@ Node Graph::Module(const std::vector<Stream> &inStreams,
                    const bmf_sdk::JsonParam &option, std::string const &alias,
                    std::string const &modulePath,
                    std::string const &moduleEntry,
-                   InputManagerType inputStreamManager, int scheduler,
-                   int thread) {
+                   InputManagerType inputStreamManager, int scheduler) {
     return NewNode(alias, option, inStreams, moduleName, moduleType, modulePath,
-                   moduleEntry, inputStreamManager, scheduler, thread);
+                   moduleEntry, inputStreamManager, scheduler);
 }
 
 Node Graph::CppModule(const std::vector<Stream> &inStreams,
@@ -847,10 +833,9 @@ Node Graph::CppModule(const std::vector<Stream> &inStreams,
                       const bmf_sdk::JsonParam &option,
                       std::string const &alias, std::string const &modulePath,
                       std::string const &moduleEntry,
-                      InputManagerType inputStreamManager, int scheduler,
-                      int thread) {
+                      InputManagerType inputStreamManager, int scheduler) {
     return NewNode(alias, option, inStreams, moduleName, CPP, modulePath,
-                   moduleEntry, inputStreamManager, scheduler, thread);
+                   moduleEntry, inputStreamManager, scheduler);
 }
 
 Node Graph::PythonModule(const std::vector<Stream> &inStreams,
@@ -859,10 +844,9 @@ Node Graph::PythonModule(const std::vector<Stream> &inStreams,
                          std::string const &alias,
                          std::string const &modulePath,
                          std::string const &moduleEntry,
-                         InputManagerType inputStreamManager, int scheduler,
-                         int thread) {
+                         InputManagerType inputStreamManager, int scheduler) {
     return NewNode(alias, option, inStreams, moduleName, Python, modulePath,
-                   moduleEntry, inputStreamManager, scheduler, thread);
+                   moduleEntry, inputStreamManager, scheduler);
 }
 
 Node Graph::GoModule(const std::vector<Stream> &inStreams,
@@ -870,17 +854,16 @@ Node Graph::GoModule(const std::vector<Stream> &inStreams,
                      const bmf_sdk::JsonParam &option, std::string const &alias,
                      std::string const &modulePath,
                      std::string const &moduleEntry,
-                     InputManagerType inputStreamManager, int scheduler,
-                     int thread) {
+                     InputManagerType inputStreamManager, int scheduler) {
     return NewNode(alias, option, inStreams, moduleName, Go, modulePath,
-                   moduleEntry, inputStreamManager, scheduler, thread);
+                   moduleEntry, inputStreamManager, scheduler);
 }
 
 Node Graph::Decode(const bmf_sdk::JsonParam &decodePara,
                    std::string const &alias,
                    int scheduler) {
     auto nd = NewNode(alias, decodePara, {}, "c_ffmpeg_decoder", CPP, "", "",
-                      Immediate, scheduler, 1);
+                      Immediate, scheduler);
     nd[0].SetNotify("video");
     nd[1].SetNotify("audio");
     return nd;
@@ -890,7 +873,7 @@ Node Graph::Decode(const bmf_sdk::JsonParam &decodePara, Stream controlStream,
                    std::string const &alias,
                    int scheduler) {
     return NewNode(alias, decodePara, {std::move(controlStream)},
-                   "c_ffmpeg_decoder", CPP, "", "", Immediate, scheduler, 1);
+                   "c_ffmpeg_decoder", CPP, "", "", Immediate, scheduler);
 }
 
 Node Graph::Encode(Stream videoStream, Stream audioStream,
@@ -899,21 +882,21 @@ Node Graph::Encode(Stream videoStream, Stream audioStream,
                    int scheduler) {
     return NewNode(alias, encodePara,
                    {std::move(videoStream), std::move(audioStream)},
-                   "c_ffmpeg_encoder", CPP, "", "", Immediate, scheduler, 1);
+                   "c_ffmpeg_encoder", CPP, "", "", Immediate, scheduler);
 }
 
 Node Graph::Encode(Stream videoStream, const bmf_sdk::JsonParam &encodePara,
                    std::string const &alias,
                    int scheduler) {
     return NewNode(alias, encodePara, {std::move(videoStream)},
-                   "c_ffmpeg_encoder", CPP, "", "", Immediate, scheduler, 1);
+                   "c_ffmpeg_encoder", CPP, "", "", Immediate, scheduler);
 }
 
 Node Graph::Encode(const bmf_sdk::JsonParam &encodePara,
                    std::string const &alias,
                    int scheduler) {
     return NewNode(alias, encodePara, {}, "c_ffmpeg_encoder", CPP, "", "",
-                   Immediate, scheduler, 1);
+                   Immediate, scheduler);
 }
 
 Node Graph::FFMpegFilter(const std::vector<Stream> &inStreams,
@@ -924,7 +907,7 @@ Node Graph::FFMpegFilter(const std::vector<Stream> &inStreams,
     realPara["name"] = filterName;
     realPara["para"] = filterPara.json_value_;
     return NewNode(alias, bmf_sdk::JsonParam(realPara), inStreams,
-                   "c_ffmpeg_filter", CPP, "", "", Immediate, 0, 1);
+                   "c_ffmpeg_filter", CPP, "", "", Immediate, 0);
 }
 
 Node Graph::Fps(Stream inStream, int fps, std::string const &alias) {
@@ -938,7 +921,7 @@ Node Graph::InternalFFMpegFilter(const std::vector<Stream> &inStreams,
                                  const bmf_sdk::JsonParam &filterPara,
                                  std::string const &alias) {
     return NewNode(alias, filterPara, inStreams, "c_ffmpeg_filter", CPP, "", "",
-                   Immediate, 0, 1);
+                   Immediate, 0);
 }
 
 Node Graph::NewNode(std::string const &alias, const bmf_sdk::JsonParam &option,
@@ -946,15 +929,14 @@ Node Graph::NewNode(std::string const &alias, const bmf_sdk::JsonParam &option,
                     std::string const &moduleName, ModuleType moduleType,
                     std::string const &modulePath,
                     std::string const &moduleEntry,
-                    InputManagerType inputStreamManager, int scheduler,
-                    int thread) {
+                    InputManagerType inputStreamManager, int scheduler) {
     std::vector<std::shared_ptr<internal::RealStream>> inRealStreams;
     inRealStreams.reserve(inputStreams.size());
     for (auto &s : inputStreams)
         inRealStreams.emplace_back(s.baseP_);
     return Node(graph_->AddModule(alias, option, inRealStreams, moduleName,
                                   moduleType, modulePath, moduleEntry,
-                                  inputStreamManager, scheduler, thread));
+                                  inputStreamManager, scheduler));
 }
 
 SyncModule Graph::Sync(const std::vector<int> inStreams,
