@@ -351,7 +351,7 @@ std::shared_ptr<RealStream> RealGraph::NewPlaceholderStream() {
         placeholderNode_ = std::move(std::make_shared<RealNode>(
             shared_from_this(), std::numeric_limits<int>::max(), "",
             bmf_sdk::JsonParam(), std::vector<std::shared_ptr<RealStream>>(),
-            "BMFPlaceholderNode", CPP, "", "", Immediate, 0, 1));
+            "BMFPlaceholderNode", CPP, "", "", Immediate, 0));
 
     return placeholderNode_->Stream(placeholderNode_->outputStreams_.size());
 }

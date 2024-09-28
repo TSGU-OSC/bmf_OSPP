@@ -41,12 +41,6 @@ InputStreamManager::InputStreamManager(int node_id,
         input_streams_[i] = std::make_shared<InputStream>(
             i, input_streams[i], node_id, empt, max_queue_size);
         stream_id_list_.push_back(i);
-        // init tem_queue_
-        std::shared_ptr<SafeQueue<Packet>> tmp_queue = 
-            std::make_shared<SafeQueue<Packet>>();
-        tem_queue_.insert(
-            std::pair<int, std::shared_ptr<SafeQueue<Packet>>>(
-                i, tmp_queue));
     }
     max_id_ = input_streams.size() - 1;
 }
@@ -106,12 +100,7 @@ bool InputStreamManager::schedule_node() {
     int64_t min_timestamp;
     NodeReadiness node_readiness = get_node_readiness(min_timestamp);
     if (node_readiness == NodeReadiness::READY_FOR_PROCESS) {
-        // if(node_id_ == 4) {
-        //     while(stream_id_list_.size() > 1) {
-        //         stream_id_list_.pop_back();
-        //     }
-        //     BMFLOG(BMF_INFO) << "node id" << node_id_ << "\tstream id list: " << stream_id_list_.size();
-        // }
+
         Task task = Task(node_id_, stream_id_list_, output_stream_id_list_);
         task.set_timestamp(min_timestamp);
 
@@ -148,58 +137,6 @@ void InputStreamManager::add_packets(
             // callback_.notify_cb();
             callback_.sched_required(node_id_, false);
         }
-    }
-}
-/* Data Assembly(verified) */
-void InputStreamManager::add_packets(
-    int stream_id, std::shared_ptr<SafeQueue<Packet>> packets, 
-    int upstream_node_id) {
-    // immediately return when node is closed
-    // graph_output_stream has no node_callback
-    if (callback_.node_is_closed_cb != NULL && callback_.node_is_closed_cb()) {
-        return;
-    }
-    // won't need to notify if empty pkt was passed in order to save schedule
-    // cost
-    if (packets->size() == 0)
-        return;
-    if (input_streams_.count(stream_id) > 0) {
-        // Temporarily storing packets for sorting 
-        auto it = tem_queue_.find(stream_id);
-        if(it == tem_queue_.end()) {
-            BMFLOG(BMF_ERROR) << "Coundn't find right upstream to add pkts";
-            return;
-        }
-        Packet pkt;
-        static size_t push_count = 0;
-        while (packets->pop(pkt)) {
-            it->second->push(pkt);
-        }
-
-
-        // push data into different streams
-        while(!tem_queue_[queue_index_]->empty()) {
-            auto queue = tem_queue_.find(queue_index_);
-            static size_t pop_count = 0;
-
-            if(queue->second->pop(pkt)) {
-                auto copy_queue = std::make_shared<SafeQueue<Packet>>();
-                copy_queue->push(pkt);
-                input_streams_[queue_index_]->add_packets(copy_queue);
-            } else {
-                return;
-            }
-            queue_index_ = ( queue_index_ + 1 ) % tem_queue_.size();
-            
-            if (callback_.sched_required != NULL) {
-                // if (this->type() != "Immediate" || (this->type() == "Immediate"
-                // && is_empty))
-                // callback_.notify_cb();
-                callback_.sched_required(node_id_, false);
-            }
-        }
-
-
     }
 }
 
@@ -279,7 +216,6 @@ bool ImmediateInputStreamManager::fill_task_input(Task &task) {
 
     if (stream_done_.size() == input_streams_.size()) {
         task.set_timestamp(BMF_EOF);
-        // if(node_id_ == 4) BMFLOG(BMF_INFO) << "node 4 task set BMF_EOF";
     }
     return task_filled;
 }
